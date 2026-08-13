@@ -81,10 +81,3 @@ export async function syncUnsyncedPatients(): Promise<void> {
 }
 ```
 ---
-
-### How to use this with your AI IDE Tool (Cursor / Windsurf / Copilot):
-
-1. Commit `docs/PRD.md` and `AGENT_RULES.md` into your repository.
-2. In Cursor/Windsurf, press **`Cmd+K` / `Ctrl+K`** or use the Chat window and type:
-   > *"@docs/PRD.md @AGENT_RULES.md Read these rules carefully. Let's start by implementing the local SQLite database client in `src/db/client.ts` with tables for patients and consultations."*
-3. The AI agent will follow these explicit rules, avoiding web bugs, generating matching TypeScript types, and sticking to your exact database schema!
