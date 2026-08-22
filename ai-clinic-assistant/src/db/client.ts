@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import type { SQLiteDatabase } from 'expo-sqlite';
+import type { Patient } from '@/types';
 
 const DATABASE_NAME = 'clinic.db';
 
@@ -73,3 +74,15 @@ export const db: SQLiteDatabase = new Proxy({} as SQLiteDatabase, {
     return typeof value === 'function' ? value.bind(requireDatabase()) : value;
   },
 });
+
+export async function getPatients(): Promise<Patient[]> {
+  try {
+    const rows = await db.getAllAsync<Patient>(
+      'SELECT * FROM patients ORDER BY created_at DESC'
+    );
+    return rows ?? [];
+  } catch (error) {
+    console.error('Failed to fetch patients:', error);
+    throw error;
+  }
+}
