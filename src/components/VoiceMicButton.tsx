@@ -3,6 +3,9 @@ import { StyleSheet, Pressable, View, Alert, Platform } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
 
+// Safely check for native module to prevent crash in Expo Go
+const isNativeModuleAvailable = !!ExpoSpeechRecognitionModule;
+
 interface VoiceMicButtonProps {
   onTranscription: (text: string) => void;
   disabled?: boolean;
@@ -12,7 +15,7 @@ export function VoiceMicButton({ onTranscription, disabled = false }: VoiceMicBu
   const [isListening, setIsListening] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [permissionRequested, setPermissionRequested] = useState(false);
-  const [nativeModuleAvailable, setNativeModuleAvailable] = useState(true);
+  const [nativeModuleAvailable, setNativeModuleAvailable] = useState(isNativeModuleAvailable);
   const listenerRef = useRef<{ remove: () => void } | null>(null);
 
   useEffect(() => {
@@ -21,9 +24,12 @@ export function VoiceMicButton({ onTranscription, disabled = false }: VoiceMicBu
   }, []);
 
   const checkNativeModule = () => {
+    if (!isNativeModuleAvailable) {
+      setNativeModuleAvailable(false);
+      return;
+    }
     try {
-      // Check if native module exists
-      if (!ExpoSpeechRecognitionModule || !ExpoSpeechRecognitionModule.start) {
+      if (!ExpoSpeechRecognitionModule.start) {
         setNativeModuleAvailable(false);
       }
     } catch {
