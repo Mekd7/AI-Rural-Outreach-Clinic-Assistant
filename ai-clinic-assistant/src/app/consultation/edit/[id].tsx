@@ -16,29 +16,29 @@ import { TRIAGE_COLORS } from '@/constants/triage';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
 
-// expo-speech-recognition requires a custom dev build (native module).
-// Load it dynamically so the screen still works in Expo Go without it.
-let SpeechModule: any = null;
-try {
-  SpeechModule = require('expo-speech-recognition').ExpoSpeechRecognitionModule;
-} catch {
-  // Native module unavailable (Expo Go) — dictation will be disabled.
+interface Consultation {
+  id: string;
+  patient_id: string;
+  subjective_notes: string;
+  objective_notes: string;
+  assessment_plan: string;
+  prescriptions: string;
+  referral_needed: number;
+  synced: number;
+  created_at: string;
 }
 
-export default function ConsultationScreen() {
+export default function EditConsultationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // SOAP fields
   const [subjective, setSubjective] = useState('');
   const [objective, setObjective] = useState('');
   const [assessmentPlan, setAssessmentPlan] = useState('');
   const [prescriptions, setPrescriptions] = useState('');
 
-  // Voice dictation state
-  const [isRecording, setIsRecording] = useState(false);
-  const [activeField, setActiveField] = useState<'subjective' | null>('subjective');
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -47,22 +47,44 @@ export default function ConsultationScreen() {
     };
   }, []);
 
-  // Fetch patient
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
-        const row = await db.getFirstAsync<Patient>(
-          'SELECT * FROM patients WHERE id = ?',
+        const row = await db.getFirstAsync<Consultation>(
+          'SELECT * FROM consultations WHERE id = ?',
           [id],
         );
-        if (isMounted.current) {
-          setPatient(row ?? null);
+        if (row && isMounted.current) {
+          setConsultation(row);
+          setSubjective(row.subjective_notes);
+          setObjective(row.objective_notes);
+          setAssessmentPlan(row.assessment_plan);
+          setPrescriptions(
+            (() => {
+              const value = row.prescriptions.trim();
+              if (!value || value === '[]') return '';
+              try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed.join('\n') : value;
+              } catch {
+                return value;
+              }
+            })()
+          );
+
+          const p = await db.getFirstAsync<Patient>(
+            'SELECT * FROM patients WHERE id = ?',
+            [row.patient_id],
+          );
+          if (isMounted.current) {
+            setPatient(p ?? null);
+          }
         }
       } catch (err) {
-        console.error('Failed to load patient:', err);
+        console.error('Failed to load consultation:', err);
         if (isMounted.current) {
-          Alert.alert('Error', 'Unable to load patient details.');
+          Alert.alert('Error', 'Unable to load consultation details.');
         }
       } finally {
         if (isMounted.current) {
@@ -72,64 +94,8 @@ export default function ConsultationScreen() {
     })();
   }, [id]);
 
-  // Speech recognition via dynamic module (only available in dev builds)
-  useEffect(() => {
-    if (!SpeechModule) return;
-    const { addSpeechRecognitionListener } = require('expo-speech-recognition');
-
-    const resultSub = addSpeechRecognitionListener?.('result', (event: any) => {
-      if (activeField === 'subjective' && event.results?.[0]?.transcript) {
-        const transcript = event.results[0].transcript;
-        if (event.isFinal) {
-          setSubjective((prev) => prev + (prev ? ' ' : '') + transcript);
-        }
-      }
-    });
-
-    const endSub = addSpeechRecognitionListener?.('end', () => {
-      setIsRecording(false);
-    });
-
-    const errorSub = addSpeechRecognitionListener?.('error', (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      setIsRecording(false);
-    });
-
-    return () => {
-      resultSub?.remove?.();
-      endSub?.remove?.();
-      errorSub?.remove?.();
-    };
-  }, [activeField]);
-
-  const startDictation = async () => {
-    if (!SpeechModule) {
-      Alert.alert(
-        'Not available',
-        'Voice dictation requires a custom development build. It is not supported in Expo Go.',
-      );
-      return;
-    }
-    const result = await SpeechModule.requestPermissionsAsync();
-    if (!result.granted) {
-      Alert.alert('Permission required', 'Microphone permission is needed for voice dictation.');
-      return;
-    }
-    setIsRecording(true);
-    SpeechModule.start({
-      lang: 'en-US',
-      interimResults: true,
-      continuous: true,
-    });
-  };
-
-  const stopDictation = () => {
-    SpeechModule?.stop();
-    setIsRecording(false);
-  };
-
   const saveConsultation = async () => {
-    if (!patient) return;
+    if (!consultation || !patient) return;
 
     if (!subjective.trim() && !objective.trim() && !assessmentPlan.trim()) {
       Alert.alert('Missing notes', 'Please enter at least one SOAP field before saving.');
@@ -137,14 +103,11 @@ export default function ConsultationScreen() {
     }
 
     try {
-      const consultationId = `consult_${Date.now()}`;
-      const now = new Date().toISOString();
       const result = await db.runAsync(
-        `INSERT INTO consultations (id, patient_id, subjective_notes, objective_notes, assessment_plan, prescriptions, referral_needed, synced, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `UPDATE consultations
+         SET subjective_notes = ?, objective_notes = ?, assessment_plan = ?, prescriptions = ?, synced = ?
+         WHERE id = ?`,
         [
-          consultationId,
-          patient.id,
           subjective.trim(),
           objective.trim(),
           assessmentPlan.trim(),
@@ -154,18 +117,17 @@ export default function ConsultationScreen() {
               : []
           ),
           0,
-          0,
-          now,
+          id,
         ],
       );
-      console.log('Consultation saved:', consultationId, 'changes:', result.changes);
+      console.log('Consultation updated:', id, 'changes:', result.changes);
 
-      Alert.alert('Saved', 'Consultation saved successfully.', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)/consult' as any) },
+      Alert.alert('Saved', 'Consultation updated successfully.', [
+        { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (err: any) {
-      console.error('Failed to save consultation:', err?.message ?? err);
-      Alert.alert('Error', `Unable to save consultation: ${err?.message ?? 'Unknown error'}`);
+      console.error('Failed to update consultation:', err?.message ?? err);
+      Alert.alert('Error', `Unable to update consultation: ${err?.message ?? 'Unknown error'}`);
     }
   };
 
@@ -179,11 +141,11 @@ export default function ConsultationScreen() {
     );
   }
 
-  if (!patient) {
+  if (!consultation || !patient) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.centered}>
-          <Text style={styles.errorText}>Patient not found.</Text>
+          <Text style={styles.errorText}>Consultation not found.</Text>
           <Pressable style={styles.backButtonAlt} onPress={() => router.back()}>
             <Text style={styles.backButtonAltText}>Go Back</Text>
           </Pressable>
@@ -193,12 +155,6 @@ export default function ConsultationScreen() {
   }
 
   const triageColors = TRIAGE_COLORS[patient.triage_level];
-  const triageLabel =
-    patient.triage_level === 'RED'
-      ? 'EMERGENCY'
-      : patient.triage_level === 'YELLOW'
-        ? 'URGENT'
-        : 'STABLE';
 
   const patientMeta = [
     `${patient.age}y`,
@@ -211,16 +167,14 @@ export default function ConsultationScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backIcon}>‹</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>Consultation</Text>
+        <Text style={styles.headerTitle}>Edit Consultation</Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Patient Card */}
       <View style={styles.patientCard}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{patient.full_name.charAt(0).toUpperCase()}</Text>
@@ -239,31 +193,6 @@ export default function ConsultationScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
-        {/* Voice Dictation */}
-        <View style={styles.soapCard}>
-          <Text style={styles.sectionHeaderLabel}>VOICE DICTATION</Text>
-          <View style={styles.dictationDots}>
-            {Array.from({ length: 30 }).map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.dot,
-                  isRecording && { backgroundColor: '#0ea5e9' },
-                ]}
-              />
-            ))}
-          </View>
-          <Pressable
-            style={[styles.micButton, isRecording && styles.micButtonActive]}
-            onPressIn={startDictation}
-            onPressOut={stopDictation}>
-            <Text style={styles.micIcon}>🎙</Text>
-          </Pressable>
-          <Text style={styles.micLabel}>
-            {isRecording ? 'Listening…' : 'Hold to Dictate Notes'}
-          </Text>
-        </View>
-
         {/* Subjective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
@@ -298,7 +227,6 @@ export default function ConsultationScreen() {
             </View>
           </View>
 
-          {/* Vitals Grid */}
           <View style={styles.vitalsGrid}>
             <View style={[styles.vitalItem, { backgroundColor: triageColors.background }]}>
               <Text style={styles.vitalLabel}>Blood Pressure</Text>
@@ -351,10 +279,6 @@ export default function ConsultationScreen() {
             multiline
             textAlignVertical="top"
           />
-          <Pressable style={styles.aiButton}>
-            <Text style={styles.aiButtonIcon}>📊</Text>
-            <Text style={styles.aiButtonText}>Query MoH Clinical Guidelines (AI)</Text>
-          </Pressable>
         </View>
 
         {/* Prescriptions */}
@@ -379,18 +303,12 @@ export default function ConsultationScreen() {
           />
         </View>
 
-        {/* Spacer for bottom buttons */}
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* Bottom Action Buttons */}
       <View style={styles.bottomActions}>
-        <Pressable style={styles.referralButton} onPress={() => Alert.alert('Coming soon', 'Referral slip generation is not yet implemented.')}>
-          <Text style={styles.referralButtonText}>Generate Referral{'\n'}Slip</Text>
-        </Pressable>
-        <Pressable style={styles.completeButton} onPress={saveConsultation}>
-          <Text style={styles.completeCheckmark}>✓</Text>
-          <Text style={styles.completeButtonText}>Complete{'\n'}Consultation</Text>
+        <Pressable style={styles.saveButton} onPress={saveConsultation}>
+          <Text style={styles.saveButtonText}>Update Consultation</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -428,7 +346,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Header
   header: {
     backgroundColor: '#0284c7',
     paddingTop: 12,
@@ -459,7 +376,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Patient Card
   patientCard: {
     backgroundColor: '#0369a1',
     marginHorizontal: 16,
@@ -502,7 +418,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  // Scroll
   scrollView: {
     flex: 1,
   },
@@ -511,7 +426,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
 
-  // SOAP Card
   soapCard: {
     backgroundColor: '#ffffff',
     borderRadius: 16,
@@ -560,55 +474,6 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
 
-  // Dictation
-  sectionHeaderLabel: {
-    color: '#0284c7',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  dictationDots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 16,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#cbd5e1',
-  },
-  micButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#e0f2fe',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderWidth: 3,
-    borderColor: '#0ea5e9',
-  },
-  micButtonActive: {
-    backgroundColor: '#0ea5e9',
-    borderColor: '#0369a1',
-  },
-  micIcon: {
-    fontSize: 32,
-  },
-  micLabel: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 14,
-    color: '#475569',
-    fontWeight: '500',
-  },
-
-  // Vitals Grid
   vitalsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -633,30 +498,6 @@ const styles = StyleSheet.create({
     color: '#0f172a',
   },
 
-  // AI Button
-  aiButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginTop: 14,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#f8fafc',
-  },
-  aiButtonIcon: {
-    fontSize: 16,
-  },
-  aiButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-  },
-
-  // Bottom Actions
   bottomActions: {
     flexDirection: 'row',
     padding: 16,
@@ -665,40 +506,17 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#e2e8f0',
   },
-  referralButton: {
-    flex: 1,
-    borderWidth: 2,
-    borderColor: '#0ea5e9',
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  referralButtonText: {
-    color: '#0284c7',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  completeButton: {
+  saveButton: {
     flex: 1,
     backgroundColor: '#0ea5e9',
     borderRadius: 14,
-    paddingVertical: 14,
-    flexDirection: 'row',
+    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
   },
-  completeCheckmark: {
+  saveButtonText: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-  },
-  completeButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
   },
 });

@@ -26,6 +26,18 @@ export default function AppTabs() {
           title: 'Explore',
         }}
       />
+      <Tabs.Screen
+        name="register"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="consultation/[id]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -1,15 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import * as SplashScreen from 'expo-splash-screen';
+import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, useColorScheme } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 import { initDatabase } from '@/db/client';
 
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
+export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [dbReady, setDbReady] = useState(false);
 
@@ -24,22 +20,27 @@ export default function TabLayout() {
           'Database Error',
           'Unable to initialize local storage. Some features may not work offline.',
         );
-        setDbReady(true); // Still render to show error state
+        setDbReady(true);
       });
   }, []);
 
   if (!dbReady) {
     return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AnimatedSplashOverlay />
+        <></>
       </ThemeProvider>
     );
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="consultation/[id]" />
+        <Stack.Screen name="consultation/view/[id]" />
+        <Stack.Screen name="consultation/edit/[id]" />
+        <Stack.Screen name="patient/edit/[id]" />
+      </Stack>
     </ThemeProvider>
   );
 }
