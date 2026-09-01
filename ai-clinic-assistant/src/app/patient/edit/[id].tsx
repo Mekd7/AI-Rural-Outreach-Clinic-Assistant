@@ -1,9 +1,8 @@
-import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Switch,
@@ -11,6 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { db } from '@/db/client';
 import type { Gender, Patient } from '@/types';
@@ -28,28 +28,45 @@ type FormState = {
   is_pregnant: boolean;
 };
 
-const initialForm: FormState = {
-  full_name: '',
-  age: '',
-  gender: 'M',
-  kebele: '',
-  systolic_bp: '',
-  diastolic_bp: '',
-  heart_rate: '',
-  temperature: '',
-  is_pregnant: false,
-};
-
 const badgeColors = {
   RED: { background: '#fee2e2', border: '#ef4444', text: '#b91c1c' },
   YELLOW: { background: '#fef3c7', border: '#f59e0b', text: '#b45309' },
   GREEN: { background: '#dcfce7', border: '#10b981', text: '#047857' },
 } as const;
 
-function RegisterScreen() {
-  const [form, setForm] = useState<FormState>(initialForm);
+export default function EditPatientScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [form, setForm] = useState<FormState | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    (async () => {
+      try {
+        const row = await db.getFirstAsync<Patient>('SELECT * FROM patients WHERE id = ?', [id]);
+        if (row) {
+          setPatient(row);
+          setForm({
+            full_name: row.full_name,
+            age: String(row.age),
+            gender: row.gender,
+            kebele: row.kebele,
+            systolic_bp: String(row.systolic_bp),
+            diastolic_bp: String(row.diastolic_bp),
+            heart_rate: String(row.heart_rate),
+            temperature: String(row.temperature),
+            is_pregnant: Boolean(row.is_pregnant),
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load patient:', err);
+        Alert.alert('Error', 'Unable to load patient for editing.');
+      }
+    })();
+  }, [id]);
 
   const triage = useMemo(() => {
+    if (!form) return 'GREEN';
     return calculateTriage({
       age: form.age ? Number(form.age) : undefined,
       gender: form.gender,
@@ -64,10 +81,12 @@ function RegisterScreen() {
   const badgeStyle = badgeColors[triage];
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => (current ? { ...current, [key]: value } : current));
   };
 
   const savePatient = async () => {
+    if (!form || !patient || !id) return;
+
     const fullName = form.full_name.trim();
     const kebele = form.kebele.trim();
     const age = Number(form.age);
@@ -86,65 +105,59 @@ function RegisterScreen() {
       return;
     }
 
-    const patient: Patient = {
-      id: `patient_${Date.now()}`,
-      full_name: fullName,
-      age,
-      gender: form.gender,
-      kebele,
-      is_pregnant: form.is_pregnant,
-      systolic_bp: systolicBp,
-      diastolic_bp: diastolicBp,
-      heart_rate: heartRate,
-      temperature,
-      triage_level: triage,
-      synced: false,
-      created_at: new Date().toISOString(),
-    };
-
     try {
       await db.runAsync(
-        `INSERT INTO patients (id, full_name, age, gender, kebele, is_pregnant, systolic_bp, diastolic_bp, heart_rate, temperature, triage_level, synced, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        `UPDATE patients
+         SET full_name = ?, age = ?, gender = ?, kebele = ?, is_pregnant = ?, systolic_bp = ?, diastolic_bp = ?, heart_rate = ?, temperature = ?, triage_level = ?, synced = ?
+         WHERE id = ?`,
         [
-          patient.id,
-          patient.full_name,
-          patient.age,
-          patient.gender,
-          patient.kebele,
-          patient.is_pregnant ? 1 : 0,
-          patient.systolic_bp,
-          patient.diastolic_bp,
-          patient.heart_rate,
-          patient.temperature,
-          patient.triage_level,
-          patient.synced ? 1 : 0,
-          patient.created_at,
+          fullName,
+          age,
+          form.gender,
+          kebele,
+          form.is_pregnant ? 1 : 0,
+          systolicBp,
+          diastolicBp,
+          heartRate,
+          temperature,
+          triage,
+          0,
+          id,
         ],
       );
 
-      Alert.alert('Patient saved', `${patient.full_name} was saved successfully.`, [
+      Alert.alert('Patient updated', `${fullName} was updated successfully.`, [
         {
           text: 'OK',
-          onPress: () => router.back(),
+          onPress: () => router.replace('/(tabs)' as any),
         },
       ]);
     } catch (error) {
-      console.error('Failed to save patient:', error);
-      Alert.alert('Save failed', 'Unable to save the patient to local storage.');
+      console.error('Failed to update patient:', error);
+      Alert.alert('Update failed', 'Unable to update the patient.');
     }
   };
+
+  if (!form) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centered}>
+          <Text style={styles.loadingText}>Loading…</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton} accessibilityLabel="Go back">
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backIcon}>‹</Text>
         </Pressable>
 
         <View style={styles.headerTitleWrap}>
-          <Text style={styles.headerTitle}>New Patient</Text>
-          <Text style={styles.headerSubtitle}>Registration &amp; Vitals Entry</Text>
+          <Text style={styles.headerTitle}>Edit Patient</Text>
+          <Text style={styles.headerSubtitle}>Update registration details</Text>
         </View>
 
         <View style={styles.headerIcons}>
@@ -299,28 +312,9 @@ function RegisterScreen() {
         </View>
 
         <Pressable style={styles.submitButton} onPress={savePatient}>
-          <Text style={styles.submitButtonText}>Save Patient &amp; Begin Consultation</Text>
+          <Text style={styles.submitButtonText}>Update Patient</Text>
         </Pressable>
       </ScrollView>
-
-      <View style={styles.bottomTabs}>
-        <Pressable style={styles.tabItem}>
-          <Text style={styles.tabIcon}>⌂</Text>
-          <Text style={styles.tabLabel}>Queue</Text>
-        </Pressable>
-        <Pressable style={[styles.tabItem, styles.tabItemActive]}>
-          <Text style={styles.tabIcon}>✚</Text>
-          <Text style={styles.tabLabel}>Register</Text>
-        </Pressable>
-        <Pressable style={styles.tabItem}>
-          <Text style={styles.tabIcon}>☰</Text>
-          <Text style={styles.tabLabel}>Consult</Text>
-        </Pressable>
-        <Pressable style={styles.tabItem}>
-          <Text style={styles.tabIcon}>▣</Text>
-          <Text style={styles.tabLabel}>Report</Text>
-        </Pressable>
-      </View>
     </SafeAreaView>
   );
 }
@@ -329,6 +323,15 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#ebf3f7',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#475569',
   },
   header: {
     backgroundColor: '#0ea5e9',
@@ -506,34 +509,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
   },
-  bottomTabs: {
-    flexDirection: 'row',
-    backgroundColor: '#f3f7fb',
-    borderTopWidth: 1,
-    borderTopColor: '#dfe9f4',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    gap: 4,
-    borderRadius: 10,
-  },
-  tabItemActive: {
-    backgroundColor: '#e4f4ff',
-  },
-  tabIcon: {
-    fontSize: 22,
-    color: '#4b5563',
-  },
-  tabLabel: {
-    fontSize: 11,
-    color: '#4b5563',
-    fontWeight: '600',
-  },
 });
-
-export default RegisterScreen;

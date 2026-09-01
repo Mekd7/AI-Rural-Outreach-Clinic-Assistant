@@ -4,7 +4,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
   Alert,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
   View,
   FlatList,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { db, getPatients } from '@/db/client';
 import type { Patient } from '@/types';
@@ -72,6 +72,30 @@ export default function HomeScreen() {
     }, [loadPatients])
   );
 
+  const deletePatient = useCallback(async (id: string) => {
+    Alert.alert(
+      'Delete Patient',
+      'Are you sure? This will also delete all consultations for this patient.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await db.runAsync('DELETE FROM consultations WHERE patient_id = ?', [id]);
+              await db.runAsync('DELETE FROM patients WHERE id = ?', [id]);
+              loadPatients();
+            } catch (err) {
+              console.error('Failed to delete patient:', err);
+              Alert.alert('Error', 'Unable to delete patient.');
+            }
+          },
+        },
+      ],
+    );
+  }, [loadPatients]);
+
   const filteredPatients = useMemo(() => {
     let result = patients;
 
@@ -103,7 +127,7 @@ export default function HomeScreen() {
           <View style={styles.statusBadge}>
             <Text style={styles.statusBadgeText}>Offline</Text>
           </View>
-          <Pressable style={styles.newPatientButton} onPress={() => router.push('/register')}>
+          <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
             <Text style={styles.newPatientButtonText}>+ New Patient</Text>
           </Pressable>
         </View>
@@ -181,6 +205,8 @@ export default function HomeScreen() {
                                                                                               <PatientCard
                                                                                                 patient={item}
                                                                                                 onPress={() => router.push(`/consultation/${item.id}` as any)}
+                                                                                                onEdit={() => router.push(`/patient/edit/${item.id}` as any)}
+                                                                                                onDelete={() => deletePatient(item.id)}
                                                                                               />
                                                                                             )}
                                               contentContainerStyle={styles.listContent}

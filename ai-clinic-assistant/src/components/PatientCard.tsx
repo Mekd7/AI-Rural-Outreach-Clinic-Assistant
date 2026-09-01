@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Patient } from '@/types';
 import { TriageBadge } from './TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
@@ -6,10 +6,24 @@ import { TRIAGE_COLORS } from '@/constants/triage';
 interface PatientCardProps {
   patient: Patient;
   onPress?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function PatientCard({ patient, onPress }: PatientCardProps) {
+export function PatientCard({ patient, onPress, onEdit, onDelete }: PatientCardProps) {
   const triageColors = TRIAGE_COLORS[patient.triage_level];
+
+  const showOptions = () => {
+    Alert.alert(
+      patient.full_name,
+      'Choose an action',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Edit', onPress: onEdit },
+        { text: 'Delete', style: 'destructive', onPress: onDelete },
+      ],
+    );
+  };
 
   const formatVitals = () => {
     const parts = [];
@@ -28,7 +42,9 @@ export function PatientCard({ patient, onPress }: PatientCardProps) {
       <View style={styles.cardHeader}>
         <View style={styles.nameRow}>
           <Text style={styles.patientName} numberOfLines={1}>{patient.full_name}</Text>
-          <TriageBadge level={patient.triage_level} size="small" />
+          <Pressable onPress={showOptions} style={styles.kebab} hitSlop={8}>
+            <Text style={styles.kebabIcon}>⋮</Text>
+          </Pressable>
         </View>
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>
@@ -45,7 +61,7 @@ export function PatientCard({ patient, onPress }: PatientCardProps) {
         <Text style={[styles.vitalsValue, { color: triageColors.text }]}>{formatVitals()}</Text>
       </View>
 
-      {patient.is_pregnant && (
+      {!!patient.is_pregnant && (
         <View style={[styles.pregnancyBadge, { backgroundColor: triageColors.background }]}>
           <Text style={[styles.pregnancyText, { color: triageColors.text }]}>Pregnant</Text>
         </View>
@@ -133,5 +149,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  kebab: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 4,
+  },
+  kebabIcon: {
+    fontSize: 20,
+    color: '#64748b',
+    fontWeight: '700',
   },
 });

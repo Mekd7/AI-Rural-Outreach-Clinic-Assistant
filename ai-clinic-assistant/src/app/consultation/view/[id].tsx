@@ -404,6 +404,8 @@ export default function ConsultationViewScreen() {
           </ScrollView>
         </SafeAreaView>
       </Modal>
+        <View style={{ height: 40 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
