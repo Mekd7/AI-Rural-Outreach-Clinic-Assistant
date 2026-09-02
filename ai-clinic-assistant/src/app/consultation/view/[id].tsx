@@ -3,10 +3,13 @@ import { useMemo } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Keyboard,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
 import { db } from '@/db/client';
+import { queryEthiopianGuidelines, type AIQueryResult } from '@/services/ai';
 import type { Patient } from '@/types';
 
 interface Consultation {
@@ -32,6 +36,13 @@ export default function ConsultationViewScreen() {
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Guideline query modal state (must be before any early returns)
+  const [showGuidelineModal, setShowGuidelineModal] = useState(false);
+  const [guidelineQuery, setGuidelineQuery] = useState('');
+  const [guidelineLoading, setGuidelineLoading] = useState(false);
+  const [guidelineResult, setGuidelineResult] = useState<AIQueryResult | null>(null);
+
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -125,6 +136,27 @@ export default function ConsultationViewScreen() {
       return consultation.prescriptions.trim() || null;
     }
   }, [consultation?.prescriptions]);
+
+  const handleGuidelineQuery = async () => {
+    if (!guidelineQuery.trim()) {
+      Alert.alert('Empty query', 'Please enter a clinical question before asking.');
+      return;
+    }
+
+    setGuidelineLoading(true);
+    setGuidelineResult(null);
+
+    const result = await queryEthiopianGuidelines(guidelineQuery.trim());
+    setGuidelineResult(result);
+    setGuidelineLoading(false);
+  };
+
+  const closeGuidelineModal = () => {
+    setShowGuidelineModal(false);
+    setGuidelineQuery('');
+    setGuidelineResult(null);
+    Keyboard.dismiss();
+  };
 
   const deleteConsultation = () => {
     Alert.alert(
@@ -282,6 +314,96 @@ export default function ConsultationViewScreen() {
           </Pressable>
         </View>
 
+        {/* Query Guidelines Button */}
+        <View style={styles.guidelineButtonContainer}>
+          <Pressable style={styles.guidelineButton} onPress={() => setShowGuidelineModal(true)}>
+            <Text style={styles.guidelineButtonText}>Query Ethiopian Guidelines</Text>
+          </Pressable>
+        </View>
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
+
+      {/* Guideline Query Modal */}
+      <Modal
+        visible={showGuidelineModal}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={closeGuidelineModal}>
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Query Ethiopian Guidelines</Text>
+            <Pressable style={styles.modalCloseButton} onPress={closeGuidelineModal}>
+              <Text style={styles.modalCloseText}>✕</Text>
+            </Pressable>
+          </View>
+          <ScrollView style={styles.modalContent} keyboardShouldPersistTaps="handled">
+            <View style={styles.modalSection}>
+              <Text style={styles.modalSubtitle}>
+                Clinical Decision Support Tool
+              </Text>
+              <Text style={styles.modalDisclaimer}>
+                This feature provides guideline lookup assistance only. It is NOT an official Ethiopian medical
+                directive and should NOT replace clinical judgment. Always verify against applicable FMOH/WHO-Ethiopia
+                guidelines before clinical application.
+              </Text>
+            </View>
+
+            <View style={styles.modalSection}>
+              <Text style={styles.modalLabel}>Your Clinical Question</Text>
+              <TextInput
+                style={[styles.modalInput, { minHeight: 120 }]}
+                value={guidelineQuery}
+                onChangeText={setGuidelineQuery}
+                placeholder="e.g., What is the recommended initial assessment for a patient presenting with suspected malaria?"
+                placeholderTextColor="#94a3b8"
+                multiline
+                textAlignVertical="top"
+                editable={!guidelineLoading}
+              />
+            </View>
+
+            {guidelineLoading && (
+              <View style={styles.modalLoading}>
+                <Text style={styles.modalLoadingText}>Querying guidelines…</Text>
+              </View>
+            )}
+
+            {guidelineResult && !guidelineLoading && (
+              <View style={styles.modalSection}>
+                <Text style={styles.modalLabel}>Response</Text>
+                <View
+                  style={[
+                    styles.modalResponse,
+                    guidelineResult.success ? styles.modalResponseSuccess : styles.modalResponseError,
+                  ]}>
+                  <Text style={styles.modalResponseText}>
+                    {guidelineResult.success ? guidelineResult.response : guidelineResult.error}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.modalActions}>
+              <Pressable style={[styles.modalActionButton, styles.modalCancelButton]} onPress={closeGuidelineModal}>
+                <Text style={styles.modalActionText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.modalActionButton,
+                  styles.modalAskButton,
+                  guidelineLoading && styles.modalAskButtonDisabled,
+                ]}
+                onPress={handleGuidelineQuery}
+                disabled={guidelineLoading || !guidelineQuery.trim()}>
+                <Text style={styles.modalActionText}>
+                  {guidelineLoading ? 'Asking…' : 'Ask'}
+                </Text>
+              </Pressable>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
@@ -496,5 +618,144 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#0f172a',
+  },
+
+  guidelineButtonContainer: {
+    width: '100%',
+    marginTop: 8,
+  },
+  guidelineButton: {
+    backgroundColor: '#f0f9ff',
+    borderWidth: 1,
+    borderColor: '#0ea5e9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  guidelineButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0284c7',
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    backgroundColor: '#f8fafc',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+  },
+  modalCloseText: {
+    fontSize: 20,
+    color: '#64748b',
+  },
+  modalContent: {
+    flex: 1,
+    padding: 16,
+  },
+  modalSection: {
+    marginBottom: 20,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0ea5e9',
+    marginBottom: 8,
+  },
+  modalDisclaimer: {
+    fontSize: 12,
+    color: '#ef4444',
+    lineHeight: 18,
+  },
+  modalLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  modalInput: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#d1d9e2',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#111827',
+  },
+  modalLoading: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  modalLoadingText: {
+    fontSize: 15,
+    color: '#64748b',
+  },
+  modalResponse: {
+    borderRadius: 12,
+    padding: 14,
+  },
+  modalResponseSuccess: {
+    backgroundColor: '#f0fdf4',
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  modalResponseError: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  modalResponseText: {
+    fontSize: 14,
+    color: '#1e293b',
+    lineHeight: 21,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  modalActionButton: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCancelButton: {
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#d1d9e2',
+  },
+  modalAskButton: {
+    backgroundColor: '#0ea5e9',
+  },
+  modalAskButtonDisabled: {
+    backgroundColor: '#7dd3fc',
+  },
+  modalActionText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
   },
 });
