@@ -1,7 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,6 +17,7 @@ import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
+import { queryEthiopianGuidelines, type AIQueryResult } from '@/services/ai';
 
 // expo-speech-recognition requires a custom dev build (native module).
 // Load it dynamically so the screen still works in Expo Go without it.
@@ -40,6 +43,12 @@ export default function ConsultationScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [activeField, setActiveField] = useState<'subjective' | null>('subjective');
   const isMounted = useRef(true);
+
+  // Guideline search modal state
+  const [guidelineModalVisible, setGuidelineModalVisible] = useState(false);
+  const [guidelineQuery, setGuidelineQuery] = useState('');
+  const [guidelineLoading, setGuidelineLoading] = useState(false);
+  const [guidelineResult, setGuidelineResult] = useState<AIQueryResult | null>(null);
 
   useEffect(() => {
     return () => {
@@ -126,6 +135,54 @@ export default function ConsultationScreen() {
   const stopDictation = () => {
     SpeechModule?.stop();
     setIsRecording(false);
+  };
+
+  const searchGuidelines = async () => {
+    if (!guidelineQuery.trim()) return;
+    setGuidelineLoading(true);
+    setGuidelineResult(null);
+    try {
+      const result = await queryEthiopianGuidelines(guidelineQuery);
+      setGuidelineResult(result);
+    } catch (err) {
+      console.error('Guideline search failed:', err);
+      setGuidelineResult({
+        success: false,
+        error: 'An unexpected error occurred while searching guidelines.',
+        errorType: 'unknown',
+      });
+    } finally {
+      setGuidelineLoading(false);
+    }
+  };
+
+  const insertGuidelinesIntoPlan = () => {
+    if (!guidelineResult?.response) return;
+    const newText = guidelineResult.response.trim();
+    setAssessmentPlan((prev) => {
+      const prevTrimmed = prev.trim();
+      if (!prevTrimmed) return newText;
+      const separator = prevTrimmed.endsWith('\n') ? '\n' : '\n\n';
+      return prevTrimmed + separator + newText;
+    });
+    setGuidelineModalVisible(false);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
+  };
+
+  const renderGuidelineBullets = (text?: string) => {
+    if (!text) return [];
+    return text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => line.replace(/^[\s]*[-•*][\s]*/, ''));
+  };
+
+  const closeGuidelineModal = () => {
+    setGuidelineModalVisible(false);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
   };
 
   const saveConsultation = async () => {
@@ -351,7 +408,7 @@ export default function ConsultationScreen() {
             multiline
             textAlignVertical="top"
           />
-          <Pressable style={styles.aiButton}>
+          <Pressable style={styles.aiButton} onPress={() => setGuidelineModalVisible(true)}>
             <Text style={styles.aiButtonIcon}>📊</Text>
             <Text style={styles.aiButtonText}>Query MoH Clinical Guidelines (AI)</Text>
           </Pressable>
@@ -382,6 +439,77 @@ export default function ConsultationScreen() {
         {/* Spacer for bottom buttons */}
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Guideline Search Modal */}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={guidelineModalVisible}
+        onRequestClose={closeGuidelineModal}>
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Pressable onPress={closeGuidelineModal} style={styles.modalCloseButton}>
+              <Text style={styles.modalCloseIcon}>✕</Text>
+            </Pressable>
+            <Text style={styles.modalTitle}>Clinical Guidelines</Text>
+            <View style={styles.modalHeaderSpacer} />
+          </View>
+
+          <View style={styles.modalSearchRow}>
+            <TextInput
+              style={styles.modalSearchInput}
+              value={guidelineQuery}
+              onChangeText={setGuidelineQuery}
+              placeholder="e.g. Acute Malaria"
+              placeholderTextColor="#94a3b8"
+              onSubmitEditing={searchGuidelines}
+              returnKeyType="search"
+            />
+            <Pressable style={styles.modalSearchButton} onPress={searchGuidelines}>
+              {guidelineLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.modalSearchButtonText}>Search</Text>
+              )}
+            </Pressable>
+          </View>
+
+          {guidelineResult?.success === false && guidelineResult.errorType === 'network' && (
+            <View style={styles.offlineBanner}>
+              <Text style={styles.offlineBannerText}>Guideline search requires active network</Text>
+            </View>
+          )}
+
+          <ScrollView
+            style={styles.modalResultsScroll}
+            contentContainerStyle={styles.modalResultsContent}
+            keyboardShouldPersistTaps="handled">
+            {guidelineResult?.success === false && guidelineResult.errorType !== 'network' && (
+              <View style={styles.modalErrorCard}>
+                <Text style={styles.modalErrorTitle}>Unable to retrieve guidelines</Text>
+                <Text style={styles.modalErrorText}>{guidelineResult.error}</Text>
+              </View>
+            )}
+
+            {guidelineResult?.success && (
+              <>
+                <View style={styles.modalResultCard}>
+                  <Text style={styles.modalResultLabel}>Treatment guidelines</Text>
+                  {renderGuidelineBullets(guidelineResult.response).map((bullet, index) => (
+                    <Text key={index} style={styles.modalBullet}>
+                      • {bullet}
+                    </Text>
+                  ))}
+                </View>
+
+                <Pressable style={styles.modalInsertButton} onPress={insertGuidelinesIntoPlan}>
+                  <Text style={styles.modalInsertButtonText}>Copy / Insert into Plan</Text>
+                </Pressable>
+              </>
+            )}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
 
       {/* Bottom Action Buttons */}
       <View style={styles.bottomActions}>
@@ -700,5 +828,142 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     textAlign: 'center',
+  },
+
+  // Guideline Modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#0284c7',
+  },
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseIcon: {
+    color: '#ffffff',
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  modalTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  modalHeaderSpacer: {
+    width: 36,
+  },
+  modalSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  modalSearchInput: {
+    flex: 1,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  modalSearchButton: {
+    backgroundColor: '#0284c7',
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  modalSearchButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  offlineBanner: {
+    backgroundColor: '#fee2e2',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fecaca',
+  },
+  offlineBannerText: {
+    color: '#991b1b',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  modalResultsScroll: {
+    flex: 1,
+  },
+  modalResultsContent: {
+    padding: 16,
+  },
+  modalResultCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  modalResultLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0ea5e9',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 10,
+  },
+  modalBullet: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#334155',
+    marginBottom: 8,
+  },
+  modalInsertButton: {
+    backgroundColor: '#0ea5e9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  modalInsertButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  modalErrorCard: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  modalErrorTitle: {
+    color: '#b91c1c',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  modalErrorText: {
+    color: '#7f1d1d',
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

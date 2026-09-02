@@ -378,7 +378,7 @@ export default function ConsultationViewScreen() {
                     guidelineResult.success ? styles.modalResponseSuccess : styles.modalResponseError,
                   ]}>
                   <Text style={styles.modalResponseText}>
-                    {guidelineResult.success ? guidelineResult.response : guidelineResult.error}
+                    {guidelineResult.success ? (guidelineResult.response ?? '') : (guidelineResult.error ?? '')}
                   </Text>
                 </View>
               </View>
@@ -404,8 +404,6 @@ export default function ConsultationViewScreen() {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-        <View style={{ height: 40 }} />
-      </ScrollView>
     </SafeAreaView>
   );
 }
