@@ -106,12 +106,11 @@ function generateHEWInstructions(patient: Patient, consultation: Consultation | 
   return instructions;
 }
 
-function buildExportText(entries: HandoverEntry[], metrics: { total: number; urgent: number; followUps: number }): string {
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+function buildExportText(entries: HandoverEntry[], metrics: { total: number; urgent: number; followUps: number }, dateLabel: string): string {
   const lines: string[] = [
     '========================================',
     '  POST-CLINIC HEW HANDOVER REPORT',
-    `  Date: ${today}`,
+    `  Date: ${dateLabel}`,
     '========================================',
     '',
     `Total Patients Seen:   ${metrics.total}`,
@@ -149,12 +148,43 @@ function buildExportText(entries: HandoverEntry[], metrics: { total: number; urg
   return lines.join('\n');
 }
 
+// ---------- Date helpers ----------
+
+interface ClinicDate {
+  dateStr: string; // YYYY-MM-DD
+  patientCount: number;
+  urgentCount: number;
+}
+
+function formatDateLabel(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatDateShort(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function isToday(dateStr: string): boolean {
+  return dateStr === getTodayDateString();
+}
+
 // ---------- Component ----------
 
 export default function HandoverScreen() {
+  // Phase: null = date list, string = selected date's detail view
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const [clinicDates, setClinicDates] = useState<ClinicDate[]>([]);
+  const [datesLoading, setDatesLoading] = useState(true);
+
   const [entries, setEntries] = useState<HandoverEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -163,24 +193,53 @@ export default function HandoverScreen() {
     };
   }, []);
 
-  const loadTodayData = useCallback(async () => {
-    setLoading(true);
+  // ── Load distinct clinic dates ──
+  const loadDates = useCallback(async () => {
+    setDatesLoading(true);
     try {
-      const today = getTodayDateString();
+      const rows = await db.getAllAsync<{ date_str: string; cnt: number; urgent_cnt: number }>(
+        `SELECT strftime('%Y-%m-%d', created_at) as date_str,
+                COUNT(*) as cnt,
+                SUM(CASE WHEN triage_level = 'RED' THEN 1 ELSE 0 END) as urgent_cnt
+         FROM patients
+         GROUP BY date_str
+         ORDER BY date_str DESC`,
+      );
+      if (isMounted.current) {
+        setClinicDates(
+          (rows ?? []).map((r) => ({
+            dateStr: r.date_str,
+            patientCount: r.cnt,
+            urgentCount: r.urgent_cnt,
+          })),
+        );
+      }
+    } catch (err) {
+      console.error('Failed to load clinic dates:', err);
+    } finally {
+      if (isMounted.current) setDatesLoading(false);
+    }
+  }, []);
 
-      // Get today's patients
+  useEffect(() => {
+    loadDates();
+  }, [loadDates]);
+
+  // ── Load patients for a specific date ──
+  const loadDateData = useCallback(async (dateStr: string) => {
+    setLoading(true);
+    setActiveTab('all');
+    try {
       const patients = await db.getAllAsync<Patient>(
         `SELECT * FROM patients WHERE strftime('%Y-%m-%d', created_at) = ? ORDER BY created_at DESC`,
-        [today],
+        [dateStr],
       );
 
-      // Get today's consultations
       const consultations = await db.getAllAsync<Consultation>(
         `SELECT * FROM consultations WHERE strftime('%Y-%m-%d', created_at) = ? ORDER BY created_at DESC`,
-        [today],
+        [dateStr],
       );
 
-      // Map consultations by patient_id (latest per patient)
       const consultByPatient = new Map<string, Consultation>();
       for (const c of consultations) {
         if (!consultByPatient.has(c.patient_id)) {
@@ -219,9 +278,27 @@ export default function HandoverScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadTodayData();
-  }, [loadTodayData]);
+  const toggleExpanded = useCallback((patientId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(patientId)) next.delete(patientId);
+      else next.add(patientId);
+      return next;
+    });
+  }, []);
+
+  const handleSelectDate = useCallback((dateStr: string) => {
+    setSelectedDate(dateStr);
+    setExpandedIds(new Set());
+    loadDateData(dateStr);
+  }, [loadDateData]);
+
+  const handleBackToDates = useCallback(() => {
+    setSelectedDate(null);
+    setEntries([]);
+    setExpandedIds(new Set());
+    loadDates();
+  }, [loadDates]);
 
   // ---------- Metrics ----------
   const metrics = useMemo(() => {
@@ -245,7 +322,8 @@ export default function HandoverScreen() {
 
   // ---------- Export ----------
   const handleExport = async () => {
-    const text = buildExportText(entries, metrics);
+    const dateLabel = selectedDate ? formatDateLabel(selectedDate) : '';
+    const text = buildExportText(entries, metrics, dateLabel);
     try {
       await Share.share({
         message: text,
@@ -273,13 +351,14 @@ export default function HandoverScreen() {
 
   const renderActionCard = ({ item }: { item: HandoverEntry }) => {
     const p = item.patient;
-    const triageColors = TRIAGE_COLORS[p.triage_level];
     const gender = p.gender === 'M' ? 'Male' : 'Female';
+    const isExpanded = expandedIds.has(p.id);
+    const c = item.consultation;
 
     return (
       <View style={[styles.actionCard, item.isUrgentReferral && styles.actionCardUrgent]}>
-        {/* Patient header row */}
-        <View style={styles.actionCardHeader}>
+        {/* Patient header row – tappable to expand/collapse */}
+        <Pressable onPress={() => toggleExpanded(p.id)} style={styles.actionCardHeader}>
           <View style={styles.actionCardAvatar}>
             <Text style={styles.actionCardAvatarText}>{p.full_name.charAt(0).toUpperCase()}</Text>
           </View>
@@ -290,21 +369,10 @@ export default function HandoverScreen() {
             </View>
             <Text style={styles.actionCardMeta}>{p.age}y · {gender} · {p.kebele}</Text>
           </View>
-        </View>
+          <Text style={styles.expandChevron}>{isExpanded ? '▲' : '▼'}</Text>
+        </Pressable>
 
-        {/* Prescribed medications */}
-        {item.prescriptionsList.length > 0 && (
-          <View style={styles.rxSection}>
-            <Text style={styles.rxSectionTitle}>Prescribed Medications</Text>
-            {item.prescriptionsList.map((rx, i) => (
-              <View key={i} style={styles.rxPill}>
-                <Text style={styles.rxPillText}>{rx}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* HEW Instructions */}
+        {/* HEW Instructions – always visible */}
         <View style={styles.instructionsSection}>
           <Text style={styles.instructionsTitle}>HEW Actions Required</Text>
           {item.hewInstructions.map((inst, i) => (
@@ -314,23 +382,165 @@ export default function HandoverScreen() {
             </View>
           ))}
         </View>
+
+        {/* ── Expanded detail section ── */}
+        {isExpanded && (
+          <View style={styles.expandedSection}>
+            {/* Vitals summary */}
+            <View style={styles.detailBlock}>
+              <Text style={styles.detailBlockTitle}>Vitals</Text>
+              <Text style={styles.detailBlockText}>
+                BP: {p.systolic_bp}/{p.diastolic_bp} mmHg · HR: {p.heart_rate} bpm · Temp: {p.temperature}°C
+                {p.is_pregnant ? ' · Pregnant' : null}
+              </Text>
+            </View>
+
+            {/* Subjective / Chief complaint */}
+            {c && c.subjective_notes.trim().length > 0 && (
+              <View style={styles.detailBlock}>
+                <Text style={styles.detailBlockTitle}>Chief Complaint / History</Text>
+                <Text style={styles.detailBlockText}>{c.subjective_notes.trim()}</Text>
+              </View>
+            )}
+
+            {/* Objective findings */}
+            {c && c.objective_notes.trim().length > 0 && (
+              <View style={styles.detailBlock}>
+                <Text style={styles.detailBlockTitle}>Objective Findings</Text>
+                <Text style={styles.detailBlockText}>{c.objective_notes.trim()}</Text>
+              </View>
+            )}
+
+            {/* Assessment & Plan */}
+            {c && c.assessment_plan.trim().length > 0 && (
+              <View style={styles.detailBlock}>
+                <Text style={styles.detailBlockTitle}>Assessment & Plan</Text>
+                <Text style={styles.detailBlockText}>{c.assessment_plan.trim()}</Text>
+              </View>
+            )}
+
+            {/* Prescribed medications */}
+            {item.prescriptionsList.length > 0 && (
+              <View style={styles.detailBlock}>
+                <Text style={[styles.detailBlockTitle, { color: '#047857' }]}>Prescribed Medications</Text>
+                {item.prescriptionsList.map((rx, i) => (
+                  <View key={i} style={styles.rxPill}>
+                    <Text style={styles.rxPillText}>{rx}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Referral flag */}
+            {!!c?.referral_needed && (
+              <View style={styles.referralBanner}>
+                <Text style={styles.referralBannerText}>Referral Needed</Text>
+              </View>
+            )}
+
+            {/* No consultation recorded */}
+            {!c && (
+              <View style={styles.detailBlock}>
+                <Text style={[styles.detailBlockText, { color: '#94a3b8', fontStyle: 'italic' }]}>
+                  No consultation recorded for this patient.
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Tap hint */}
+        {!isExpanded && (
+          <Pressable onPress={() => toggleExpanded(p.id)}>
+            <Text style={styles.tapHint}>Tap to view full details</Text>
+          </Pressable>
+        )}
       </View>
     );
   };
 
+  // ---------- Render: date card ----------
+  const renderDateCard = ({ item }: { item: ClinicDate }) => {
+    const today = isToday(item.dateStr);
+    return (
+      <Pressable
+        style={[styles.dateCard, today && styles.dateCardToday]}
+        onPress={() => handleSelectDate(item.dateStr)}
+      >
+        <View style={styles.dateCardLeft}>
+          <Text style={[styles.dateCardLabel, today && styles.dateCardLabelToday]}>
+            {formatDateLabel(item.dateStr)}
+          </Text>
+          {today && <Text style={styles.todayBadge}>Today</Text>}
+        </View>
+        <View style={styles.dateCardRight}>
+          <View style={styles.dateCardStat}>
+            <Text style={styles.dateCardStatValue}>{item.patientCount}</Text>
+            <Text style={styles.dateCardStatLabel}>patients</Text>
+          </View>
+          {item.urgentCount > 0 && (
+            <View style={[styles.dateCardStat, styles.dateCardStatUrgent]}>
+              <Text style={styles.dateCardStatValueUrgent}>{item.urgentCount}</Text>
+              <Text style={styles.dateCardStatLabelUrgent}>urgent</Text>
+            </View>
+          )}
+          <Text style={styles.dateCardChevron}>›</Text>
+        </View>
+      </Pressable>
+    );
+  };
+
   // ---------- Main render ----------
+
+  // Phase 1: Date list
+  if (selectedDate === null) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} style={styles.backButton}>
+            <Text style={styles.backIcon}>‹</Text>
+          </Pressable>
+          <View style={styles.headerTitleBlock}>
+            <Text style={styles.headerTitle}>HEW Handover Reports</Text>
+            <Text style={styles.headerDate}>Select a clinic day to view</Text>
+          </View>
+        </View>
+
+        <View style={styles.listContainer}>
+          {datesLoading ? (
+            <View style={styles.centered}>
+              <Text style={styles.loadingText}>Loading clinic dates…</Text>
+            </View>
+          ) : clinicDates.length === 0 ? (
+            <View style={styles.centered}>
+              <Text style={styles.emptyTitle}>No clinic days recorded</Text>
+              <Text style={styles.emptySubtext}>Patient records will appear here after registration.</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={clinicDates}
+              keyExtractor={(item) => item.dateStr}
+              renderItem={renderDateCard}
+              contentContainerStyle={styles.dateListContent}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Phase 2: Selected date detail view
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBackToDates} style={styles.backButton}>
           <Text style={styles.backIcon}>‹</Text>
         </Pressable>
         <View style={styles.headerTitleBlock}>
           <Text style={styles.headerTitle}>Post-Clinic HEW Handover Report</Text>
-          <Text style={styles.headerDate}>
-            {new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
-          </Text>
+          <Text style={styles.headerDate}>{formatDateShort(selectedDate)}</Text>
         </View>
       </View>
 
@@ -366,9 +576,9 @@ export default function HandoverScreen() {
         ) : filteredEntries.length === 0 ? (
           <View style={styles.centered}>
             <Text style={styles.emptyTitle}>
-              {activeTab === 'all' ? 'No patients seen today' : `No ${activeTab === 'urgent' ? 'urgent referrals' : 'medication follow-ups'} today`}
+              {activeTab === 'all' ? 'No patients on this date' : `No ${activeTab === 'urgent' ? 'urgent referrals' : 'medication follow-ups'}`}
             </Text>
-            <Text style={styles.emptySubtext}>Patient records from today's clinic will appear here.</Text>
+            <Text style={styles.emptySubtext}>Patient records for this clinic day will appear here.</Text>
           </View>
         ) : (
           <FlatList
@@ -398,6 +608,93 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#ebf3f7',
+  },
+
+  // Date list
+  dateListContent: {
+    padding: 16,
+  },
+  dateCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  dateCardToday: {
+    borderWidth: 2,
+    borderColor: '#0284c7',
+  },
+  dateCardLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  dateCardLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  dateCardLabelToday: {
+    color: '#0284c7',
+  },
+  todayBadge: {
+    marginTop: 4,
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#ffffff',
+    backgroundColor: '#0284c7',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  dateCardRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  dateCardStat: {
+    alignItems: 'center',
+    backgroundColor: '#f0f4f8',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  dateCardStatUrgent: {
+    backgroundColor: '#fef2f2',
+  },
+  dateCardStatValue: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#0284c7',
+  },
+  dateCardStatLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  dateCardStatValueUrgent: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#dc2626',
+  },
+  dateCardStatLabelUrgent: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#dc2626',
+  },
+  dateCardChevron: {
+    fontSize: 24,
+    color: '#94a3b8',
+    fontWeight: '300',
   },
 
   // Header
@@ -581,19 +878,58 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748b',
   },
+  expandChevron: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginLeft: 8,
+  },
+  tapHint: {
+    fontSize: 12,
+    color: '#94a3b8',
+    textAlign: 'center',
+    marginTop: 8,
+  },
 
-  // Prescriptions
-  rxSection: {
+  // Expanded detail section
+  expandedSection: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#e2e8f0',
+  },
+  detailBlock: {
     marginBottom: 12,
   },
-  rxSectionTitle: {
+  detailBlockTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#047857',
+    color: '#475569',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
-    marginBottom: 6,
+    marginBottom: 4,
   },
+  detailBlockText: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#334155',
+  },
+  referralBanner: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  referralBannerText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#dc2626',
+    textAlign: 'center',
+  },
+
+  // Prescriptions
   rxPill: {
     backgroundColor: '#f0fdf4',
     borderRadius: 8,
