@@ -126,7 +126,7 @@ function RegisterScreen() {
       Alert.alert('Patient saved', `${patient.full_name} was saved successfully.`, [
         {
           text: 'OK',
-          onPress: () => router.replace('/(tabs)' as any),
+          onPress: () => router.navigate('/' as any),
         },
       ]);
     } catch (error) {
@@ -138,7 +138,7 @@ function RegisterScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.replace('/(tabs)' as any)} style={styles.backButton} accessibilityLabel="Go back">
+        <Pressable onPress={() => router.navigate('/' as any)} style={styles.backButton} accessibilityLabel="Go back">
           <Text style={styles.backIcon}>‹</Text>
         </Pressable>
 

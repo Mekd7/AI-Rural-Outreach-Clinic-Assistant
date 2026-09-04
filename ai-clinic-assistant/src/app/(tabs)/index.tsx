@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Alert,
   Pressable,
@@ -66,11 +66,21 @@ export default function HomeScreen() {
     loadPatients();
   }, [loadPatients]);
 
+  const navigation = useNavigation();
+
   useFocusEffect(
     useCallback(() => {
       loadPatients();
     }, [loadPatients])
   );
+
+  // Backup listener for tab switches that may not trigger useFocusEffect
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadPatients();
+    });
+    return unsubscribe;
+  }, [navigation, loadPatients]);
 
   const deletePatient = useCallback(async (id: string) => {
     Alert.alert(
@@ -120,13 +130,16 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>Clinic Assistant</Text>
-        </View>
-        <View style={styles.headerRight}>
           <View style={styles.statusBadge}>
             <Text style={styles.statusBadgeText}>Offline</Text>
           </View>
+        </View>
+        <View style={styles.headerBottomRow}>
+          <Pressable style={styles.handoverButton} onPress={() => router.push('/handover' as any)}>
+            <Text style={styles.handoverButtonText}>HEW Handover</Text>
+          </Pressable>
           <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
             <Text style={styles.newPatientButtonText}>+ New Patient</Text>
           </Pressable>
@@ -226,11 +239,8 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#0284c7',
     paddingTop: 14,
-    paddingBottom: 14,
+    paddingBottom: 12,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -239,13 +249,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(255,255,255,0.15)',
   },
-  headerLeft: {
-    flex: 1,
-  },
-  headerRight: {
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  headerBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   headerTitle: {
     color: '#ffffff',
@@ -265,17 +278,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
+  handoverButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    borderRadius: 10,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    alignItems: 'center',
+  },
+  handoverButtonText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '700',
+  },
   newPatientButton: {
+    flex: 1,
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    paddingHorizontal: 16,
     paddingVertical: 10,
-    minWidth: 140,
     alignItems: 'center',
   },
   newPatientButtonText: {
     color: '#0284c7',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
   },
   searchContainer: {

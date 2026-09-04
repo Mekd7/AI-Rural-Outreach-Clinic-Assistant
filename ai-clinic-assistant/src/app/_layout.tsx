@@ -40,6 +40,7 @@ export default function RootLayout() {
         <Stack.Screen name="consultation/view/[id]" />
         <Stack.Screen name="consultation/edit/[id]" />
         <Stack.Screen name="patient/edit/[id]" />
+        <Stack.Screen name="handover" />
       </Stack>
     </ThemeProvider>
   );
