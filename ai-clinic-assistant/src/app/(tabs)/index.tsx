@@ -106,6 +106,23 @@ export default function HomeScreen() {
     );
   }, [loadPatients]);
 
+  const handlePatientPress = useCallback(async (patientId: string) => {
+    try {
+      const existing = await db.getFirstAsync<{ id: string }>(
+        'SELECT id FROM consultations WHERE patient_id = ? ORDER BY created_at DESC LIMIT 1',
+        [patientId],
+      );
+      if (existing) {
+        router.push(`/consultation/view/${existing.id}` as any);
+      } else {
+        router.push(`/consultation/${patientId}` as any);
+      }
+    } catch {
+      // Fallback to new consultation on error
+      router.push(`/consultation/${patientId}` as any);
+    }
+  }, []);
+
   const filteredPatients = useMemo(() => {
     let result = patients;
 
@@ -217,7 +234,7 @@ export default function HomeScreen() {
                                               renderItem={({ item }) => (
                                                                                               <PatientCard
                                                                                                 patient={item}
-                                                                                                onPress={() => router.push(`/consultation/${item.id}` as any)}
+                                                                                                onPress={() => handlePatientPress(item.id)}
                                                                                                 onEdit={() => router.push(`/patient/edit/${item.id}` as any)}
                                                                                                 onDelete={() => deletePatient(item.id)}
                                                                                               />

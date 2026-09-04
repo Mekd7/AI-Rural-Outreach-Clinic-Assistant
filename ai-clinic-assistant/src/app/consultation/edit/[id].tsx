@@ -1,7 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +16,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
 import { db } from '@/db/client';
+import {
+  queryEthiopianGuidelines,
+  searchEthiopianGuidelines,
+  type AIQueryResult,
+  type LocalGuidelineMatch,
+} from '@/services/ai';
 import type { Patient } from '@/types';
 
 interface Consultation {
@@ -38,6 +46,13 @@ export default function EditConsultationScreen() {
   const [objective, setObjective] = useState('');
   const [assessmentPlan, setAssessmentPlan] = useState('');
   const [prescriptions, setPrescriptions] = useState('');
+
+  // Guideline search state
+  const [guidelineModalVisible, setGuidelineModalVisible] = useState(false);
+  const [guidelineQuery, setGuidelineQuery] = useState('');
+  const [guidelineLoading, setGuidelineLoading] = useState(false);
+  const [guidelineResult, setGuidelineResult] = useState<AIQueryResult | null>(null);
+  const [localMatches, setLocalMatches] = useState<LocalGuidelineMatch[]>([]);
 
   const isMounted = useRef(true);
 
@@ -93,6 +108,103 @@ export default function EditConsultationScreen() {
       }
     })();
   }, [id]);
+
+  const handleGuidelineQueryChange = (text: string) => {
+    setGuidelineQuery(text);
+    if (!text.trim()) {
+      setLocalMatches([]);
+      setGuidelineResult(null);
+      return;
+    }
+    const matches = searchEthiopianGuidelines(text);
+    setLocalMatches(matches);
+    setGuidelineResult(null);
+  };
+
+  const searchGuidelinesAI = async () => {
+    if (!guidelineQuery.trim()) return;
+    if (localMatches.length > 0) return;
+    setGuidelineLoading(true);
+    setGuidelineResult(null);
+    try {
+      const result = await queryEthiopianGuidelines(guidelineQuery);
+      setGuidelineResult(result);
+    } catch (err) {
+      console.error('Guideline search failed:', err);
+      setGuidelineResult({ success: false, error: 'An unexpected error occurred.', errorType: 'unknown' });
+    } finally {
+      setGuidelineLoading(false);
+    }
+  };
+
+  const isDrugLine = (line: string): boolean => {
+    const l = line.toLowerCase();
+    const drugPatterns = [
+      /\d+\s*mg/, /\d+\s*mcg/, /\d+\s*ml/, /\d+\s*g\/kg/, /\d+\s*mg\/kg/,
+      /\b(po|iv|im|sc|pr|topical|sublingual|inhaled)\b/i,
+      /\b(bid|tid|qid|q\d+h|once daily|twice daily|stat|prn)\b/i,
+      /\b(tab|tablet|capsule|injection|syrup|suspension|drops|ointment|cream|suppository|inhaler|nebulize)s?\b/i,
+      /\b(furosemide|amoxicillin|metformin|enalapril|amlodipine|chloroquine|artemether|lumefantrine|quinine|artesunate|doxycycline|metronidazole|ciprofloxacin|ceftriaxone|diazepam|phenobarbital|paracetamol|ibuprofen|morphine|tramadol|omeprazole|ors|zinc|salbutamol|prednisolone|hydrocortisone|insulin|digoxin|spironolactone|penicillin|erythromycin|gentamicin|cloxacillin|cotrimoxazole|albendazole|mebendazole|primaquine|tetracycline|azithromycin|acyclovir|nystatin|clotrimazole|permethrin|benzyl benzoate|silver sulfadiazine|atropine|adrenaline|epinephrine|dopamine|aminophylline|magnesium sulfate|oxytocin|misoprostol)\b/i,
+    ];
+    return drugPatterns.some((p) => p.test(l));
+  };
+
+  const insertLocalProtocolIntoPlan = (match: LocalGuidelineMatch) => {
+    const lines = match.moh_protocol.split('\n');
+    const planLines: string[] = [];
+    const rxLines: string[] = [];
+    for (const line of lines) {
+      if (isDrugLine(line)) rxLines.push(line);
+      else planLines.push(line);
+    }
+    const planParts: string[] = [
+      `[${match.condition}]`,
+      `Clinical Features: ${match.clinical_features}`,
+    ];
+    if (planLines.length > 0) planParts.push(planLines.join('\n'));
+    if (match.urgent_referral_flags) planParts.push(`REFERRAL FLAGS: ${match.urgent_referral_flags}`);
+    const planText = planParts.join('\n\n');
+
+    setAssessmentPlan((prev) => {
+      const t = prev.trim();
+      return t ? t + '\n\n' + planText : planText;
+    });
+    if (rxLines.length > 0) {
+      const rxText = `[${match.condition}]\n` + rxLines.join('\n');
+      setPrescriptions((prev) => {
+        const t = prev.trim();
+        return t ? t + '\n\n' + rxText : rxText;
+      });
+    }
+    setGuidelineModalVisible(false);
+    setLocalMatches([]);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
+  };
+
+  const insertGuidelinesIntoPlan = () => {
+    if (!guidelineResult?.response) return;
+    const newText = guidelineResult.response.trim();
+    setAssessmentPlan((prev) => {
+      const t = prev.trim();
+      return t ? t + '\n\n' + newText : newText;
+    });
+    setGuidelineModalVisible(false);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
+  };
+
+  const renderGuidelineBullets = (text?: string) => {
+    if (!text) return [];
+    return text.split('\n').map((l) => l.trim()).filter((l) => l.length > 0).map((l) => l.replace(/^[\s]*[-•*][\s]*/, ''));
+  };
+
+  const closeGuidelineModal = () => {
+    setGuidelineModalVisible(false);
+    setLocalMatches([]);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
+  };
 
   const saveConsultation = async () => {
     if (!consultation || !patient) return;
@@ -303,8 +415,148 @@ export default function EditConsultationScreen() {
           />
         </View>
 
+        {/* Query MoH Guidelines */}
+        <View style={styles.guidelineButtonContainer}>
+          <Pressable style={styles.guidelineButton} onPress={() => setGuidelineModalVisible(true)}>
+            <Text style={styles.guidelineButtonText}>Query MoH Guidelines</Text>
+          </Pressable>
+        </View>
+
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Guideline Search Modal */}
+      <Modal
+        visible={guidelineModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={closeGuidelineModal}>
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Pressable onPress={closeGuidelineModal} style={styles.modalCloseButton}>
+              <Text style={styles.modalCloseIcon}>✕</Text>
+            </Pressable>
+            <Text style={styles.modalTitle}>Clinical Guidelines</Text>
+            <View style={styles.modalHeaderSpacer} />
+          </View>
+
+          <View style={styles.modalSearchRow}>
+            <TextInput
+              style={styles.modalSearchInput}
+              value={guidelineQuery}
+              onChangeText={handleGuidelineQueryChange}
+              placeholder="Type a condition e.g. Malaria, Pneumonia…"
+              placeholderTextColor="#94a3b8"
+              onSubmitEditing={searchGuidelinesAI}
+              returnKeyType="search"
+              autoFocus
+            />
+            <Pressable style={styles.modalSearchButton} onPress={searchGuidelinesAI}>
+              {guidelineLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.modalSearchButtonText}>{localMatches.length > 0 ? 'AI' : 'Search'}</Text>
+              )}
+            </Pressable>
+          </View>
+
+          {guidelineLoading && (
+            <View style={styles.offlineBanner}>
+              <ActivityIndicator size="small" color="#0284c7" />
+              <Text style={[styles.offlineBannerText, { color: '#0284c7', marginLeft: 8 }]}>Searching AI guidelines…</Text>
+            </View>
+          )}
+
+          {guidelineResult?.success === false && guidelineResult.errorType === 'network' && (
+            <View style={styles.offlineBanner}>
+              <Text style={styles.offlineBannerText}>Guideline search requires active network</Text>
+            </View>
+          )}
+
+          <ScrollView
+            style={styles.modalResultsScroll}
+            contentContainerStyle={styles.modalResultsContent}
+            keyboardShouldPersistTaps="handled">
+
+            {/* Local guideline matches (instant, offline) */}
+            {localMatches.length > 0 && (
+              <>
+                <View style={styles.localMatchesHeader}>
+                  <Text style={styles.localMatchesTitle}>MoH Standard Treatment Guidelines</Text>
+                  <View style={styles.mohBadge}>
+                    <Text style={styles.mohBadgeText}>Ethiopian MoH STG</Text>
+                  </View>
+                </View>
+
+                {localMatches.map((match) => (
+                  <View key={match.id} style={styles.localMatchCard}>
+                    <Text style={styles.localMatchCondition}>{match.condition}</Text>
+                    <Text style={styles.localMatchCategory}>{match.category}</Text>
+
+                    <View style={styles.localMatchSourceRow}>
+                      <View style={styles.mohBadgeSmall}>
+                        <Text style={styles.mohBadgeSmallText}>Ethiopian MoH Standard Treatment Guidelines</Text>
+                      </View>
+                    </View>
+
+                    <Text style={styles.localMatchSectionLabel}>Clinical Features &amp; Symptoms</Text>
+                    <Text style={styles.clinicalFeaturesText}>{match.clinical_features}</Text>
+
+                    <Text style={styles.localMatchSectionLabel}>MoH Protocol</Text>
+                    {match.moh_protocol.split('\n').map((line, i) => (
+                      <Text key={i} style={styles.localMatchProtocolLine}>{line}</Text>
+                    ))}
+
+                    {match.urgent_referral_flags ? (
+                      <View style={styles.referralFlagBox}>
+                        <Text style={styles.referralFlagTitle}>⚠ Urgent Referral Flags</Text>
+                        <Text style={styles.referralFlagText}>{match.urgent_referral_flags}</Text>
+                      </View>
+                    ) : null}
+
+                    <Pressable
+                      style={styles.copyToPlanButton}
+                      onPress={() => insertLocalProtocolIntoPlan(match)}>
+                      <Text style={styles.copyToPlanButtonText}>Copy to Plan &amp; Prescriptions</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* AI fallback results */}
+            {guidelineResult?.success === false && guidelineResult.errorType !== 'network' && localMatches.length === 0 && (
+              <View style={styles.modalErrorCard}>
+                <Text style={styles.modalErrorTitle}>Unable to retrieve guidelines</Text>
+                <Text style={styles.modalErrorText}>{guidelineResult.error}</Text>
+              </View>
+            )}
+
+            {guidelineResult?.success && localMatches.length === 0 && (
+              <>
+                <View style={styles.modalResultCard}>
+                  <Text style={styles.modalResultLabel}>AI-Generated Guidance</Text>
+                  {renderGuidelineBullets(guidelineResult.response).map((bullet, index) => (
+                    <Text key={index} style={styles.modalBullet}>
+                      • {bullet}
+                    </Text>
+                  ))}
+                </View>
+                <Pressable style={styles.modalInsertButton} onPress={insertGuidelinesIntoPlan}>
+                  <Text style={styles.modalInsertButtonText}>Copy / Insert into Plan</Text>
+                </Pressable>
+              </>
+            )}
+
+            {/* Empty state */}
+            {localMatches.length === 0 && !guidelineResult && !guidelineLoading && guidelineQuery.trim().length === 0 && (
+              <View style={{ alignItems: 'center', paddingTop: 40 }}>
+                <Text style={{ fontSize: 15, color: '#94a3b8' }}>Start typing to search MoH guidelines</Text>
+              </View>
+            )}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
 
       <View style={styles.bottomActions}>
         <Pressable style={styles.saveButton} onPress={saveConsultation}>
@@ -518,5 +770,281 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  guidelineButtonContainer: {
+    width: '100%',
+    marginTop: 8,
+  },
+  guidelineButton: {
+    backgroundColor: '#f0f9ff',
+    borderWidth: 1,
+    borderColor: '#0ea5e9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  guidelineButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0284c7',
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#0284c7',
+  },
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseIcon: {
+    color: '#ffffff',
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  modalTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  modalHeaderSpacer: {
+    width: 36,
+  },
+  modalSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  modalSearchInput: {
+    flex: 1,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  modalSearchButton: {
+    backgroundColor: '#0284c7',
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  modalSearchButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  offlineBanner: {
+    backgroundColor: '#fee2e2',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fecaca',
+  },
+  offlineBannerText: {
+    color: '#991b1b',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  modalResultsScroll: {
+    flex: 1,
+  },
+  modalResultsContent: {
+    padding: 16,
+  },
+  modalResultCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  modalResultLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0ea5e9',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 10,
+  },
+  modalBullet: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#334155',
+    marginBottom: 8,
+  },
+  modalInsertButton: {
+    backgroundColor: '#0ea5e9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  modalInsertButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  localMatchesHeader: {
+    marginBottom: 12,
+  },
+  localMatchesTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 6,
+  },
+  mohBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#dcfce7',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#86efac',
+  },
+  mohBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#166534',
+    letterSpacing: 0.3,
+  },
+  localMatchCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+    borderLeftWidth: 4,
+    borderLeftColor: '#16a34a',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  localMatchCondition: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0f172a',
+    marginBottom: 2,
+  },
+  localMatchCategory: {
+    fontSize: 12,
+    color: '#64748b',
+    marginBottom: 8,
+  },
+  localMatchSourceRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  mohBadgeSmall: {
+    backgroundColor: '#f0fdf4',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  mohBadgeSmallText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#15803d',
+  },
+  clinicalFeaturesText: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#475569',
+    backgroundColor: '#f8fafc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  localMatchSectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0284c7',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  localMatchProtocolLine: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#334155',
+    marginBottom: 2,
+  },
+  referralFlagBox: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  referralFlagTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#b91c1c',
+    marginBottom: 4,
+  },
+  referralFlagText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#7f1d1d',
+  },
+  copyToPlanButton: {
+    backgroundColor: '#16a34a',
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  copyToPlanButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  modalErrorCard: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  modalErrorTitle: {
+    color: '#b91c1c',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  modalErrorText: {
+    color: '#7f1d1d',
+    fontSize: 14,
+    lineHeight: 20,
   },
 });
