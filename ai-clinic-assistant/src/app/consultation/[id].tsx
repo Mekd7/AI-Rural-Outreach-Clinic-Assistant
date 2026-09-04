@@ -17,7 +17,12 @@ import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
-import { queryEthiopianGuidelines, type AIQueryResult } from '@/services/ai';
+import {
+  queryEthiopianGuidelines,
+  searchEthiopianGuidelines,
+  type AIQueryResult,
+  type LocalGuidelineMatch,
+} from '@/services/ai';
 
 // expo-speech-recognition requires a custom dev build (native module).
 // Load it dynamically so the screen still works in Expo Go without it.
@@ -49,6 +54,7 @@ export default function ConsultationScreen() {
   const [guidelineQuery, setGuidelineQuery] = useState('');
   const [guidelineLoading, setGuidelineLoading] = useState(false);
   const [guidelineResult, setGuidelineResult] = useState<AIQueryResult | null>(null);
+  const [localMatches, setLocalMatches] = useState<LocalGuidelineMatch[]>([]);
 
   useEffect(() => {
     return () => {
@@ -137,8 +143,23 @@ export default function ConsultationScreen() {
     setIsRecording(false);
   };
 
-  const searchGuidelines = async () => {
+  // Live local search triggered on every keystroke
+  const handleGuidelineQueryChange = (text: string) => {
+    setGuidelineQuery(text);
+    if (!text.trim()) {
+      setLocalMatches([]);
+      setGuidelineResult(null);
+      return;
+    }
+    const matches = searchEthiopianGuidelines(text);
+    setLocalMatches(matches);
+    setGuidelineResult(null);
+  };
+
+  // AI fallback — only triggered by pressing Search button
+  const searchGuidelinesAI = async () => {
     if (!guidelineQuery.trim()) return;
+    if (localMatches.length > 0) return; // local results are sufficient
     setGuidelineLoading(true);
     setGuidelineResult(null);
     try {
@@ -170,6 +191,67 @@ export default function ConsultationScreen() {
     setGuidelineQuery('');
   };
 
+  // Classify a protocol line as drug/medication or non-drug
+  const isDrugLine = (line: string): boolean => {
+    const l = line.toLowerCase();
+    const drugPatterns = [
+      /\d+\s*mg/,  /\d+\s*mcg/, /\d+\s*ml/, /\d+\s*g\/kg/, /\d+\s*mg\/kg/,
+      /\b(po|iv|im|sc|pr|topical|sublingual|inhaled)\b/i,
+      /\b(bid|tid|qid|q\d+h|once daily|twice daily|stat|prn)\b/i,
+      /\b(tab|tablet|capsule|injection|syrup|suspension|drops|ointment|cream|suppository|inhaler|nebulize)s?\b/i,
+      /\b(furosemide|amoxicillin|metformin|enalapril|amlodipine|chloroquine|artemether|lumefantrine|quinine|artesunate|doxycycline|metronidazole|ciprofloxacin|ceftriaxone|diazepam|phenobarbital|paracetamol|ibuprofen|morphine|tramadol|omeprazole|ors|zinc|salbutamol|prednisolone|hydrocortisone|insulin|digoxin|spironolactone|penicillin|erythromycin|gentamicin|cloxacillin|cotrimoxazole|albendazole|mebendazole|primaquine|tetracycline|azithromycin|acyclovir|nystatin|clotrimazole|permethrin|benzyl benzoate|silver sulfadiazine|atropine|adrenaline|epinephrine|dopamine|aminophylline|magnesium sulfate|oxytocin|misoprostol)\b/i,
+    ];
+    return drugPatterns.some((p) => p.test(l));
+  };
+
+  const insertLocalProtocolIntoPlan = (match: LocalGuidelineMatch) => {
+    const lines = match.moh_protocol.split('\n');
+    const planLines: string[] = [];
+    const rxLines: string[] = [];
+
+    for (const line of lines) {
+      if (isDrugLine(line)) {
+        rxLines.push(line);
+      } else {
+        planLines.push(line);
+      }
+    }
+
+    // Build Assessment & Plan text
+    const planParts: string[] = [
+      `[${match.condition}]`,
+      `Clinical Features: ${match.clinical_features}`,
+    ];
+    if (planLines.length > 0) {
+      planParts.push(planLines.join('\n'));
+    }
+    if (match.urgent_referral_flags) {
+      planParts.push(`REFERRAL FLAGS: ${match.urgent_referral_flags}`);
+    }
+    const planText = planParts.join('\n\n');
+
+    setAssessmentPlan((prev) => {
+      const prevTrimmed = prev.trim();
+      if (!prevTrimmed) return planText;
+      return prevTrimmed + '\n\n' + planText;
+    });
+
+    // Build Prescriptions text
+    if (rxLines.length > 0) {
+      const rxText = `[${match.condition}]\n` + rxLines.join('\n');
+      setPrescriptions((prev) => {
+        const prevTrimmed = prev.trim();
+        if (!prevTrimmed) return rxText;
+        return prevTrimmed + '\n\n' + rxText;
+      });
+    }
+
+    setGuidelineModalVisible(false);
+    setLocalMatches([]);
+    setGuidelineResult(null);
+    setGuidelineQuery('');
+  };
+
   const renderGuidelineBullets = (text?: string) => {
     if (!text) return [];
     return text
@@ -182,6 +264,7 @@ export default function ConsultationScreen() {
   const closeGuidelineModal = () => {
     setGuidelineModalVisible(false);
     setGuidelineResult(null);
+    setLocalMatches([]);
     setGuidelineQuery('');
   };
 
@@ -459,20 +542,28 @@ export default function ConsultationScreen() {
             <TextInput
               style={styles.modalSearchInput}
               value={guidelineQuery}
-              onChangeText={setGuidelineQuery}
-              placeholder="e.g. Acute Malaria"
+              onChangeText={handleGuidelineQueryChange}
+              placeholder="Type a condition e.g. Malaria, Pneumonia…"
               placeholderTextColor="#94a3b8"
-              onSubmitEditing={searchGuidelines}
+              onSubmitEditing={searchGuidelinesAI}
               returnKeyType="search"
+              autoFocus
             />
-            <Pressable style={styles.modalSearchButton} onPress={searchGuidelines}>
+            <Pressable style={styles.modalSearchButton} onPress={searchGuidelinesAI}>
               {guidelineLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.modalSearchButtonText}>Search</Text>
+                <Text style={styles.modalSearchButtonText}>{localMatches.length > 0 ? 'AI' : 'Search'}</Text>
               )}
             </Pressable>
           </View>
+
+          {guidelineLoading && (
+            <View style={styles.offlineBanner}>
+              <ActivityIndicator size="small" color="#0284c7" />
+              <Text style={[styles.offlineBannerText, { color: '#0284c7', marginLeft: 8 }]}>Searching AI guidelines…</Text>
+            </View>
+          )}
 
           {guidelineResult?.success === false && guidelineResult.errorType === 'network' && (
             <View style={styles.offlineBanner}>
@@ -484,17 +575,67 @@ export default function ConsultationScreen() {
             style={styles.modalResultsScroll}
             contentContainerStyle={styles.modalResultsContent}
             keyboardShouldPersistTaps="handled">
-            {guidelineResult?.success === false && guidelineResult.errorType !== 'network' && (
+
+            {/* Local guideline matches (instant, offline) */}
+            {localMatches.length > 0 && (
+              <>
+                <View style={styles.localMatchesHeader}>
+                  <Text style={styles.localMatchesTitle}>MoH Standard Treatment Guidelines</Text>
+                  <View style={styles.mohBadge}>
+                    <Text style={styles.mohBadgeText}>Ethiopian MoH STG</Text>
+                  </View>
+                </View>
+
+                {localMatches.map((match) => (
+                  <View key={match.id} style={styles.localMatchCard}>
+                    <Text style={styles.localMatchCondition}>{match.condition}</Text>
+                    <Text style={styles.localMatchCategory}>{match.category}</Text>
+
+                    <View style={styles.localMatchSourceRow}>
+                      <View style={styles.mohBadgeSmall}>
+                        <Text style={styles.mohBadgeSmallText}>Ethiopian MoH Standard Treatment Guidelines</Text>
+                      </View>
+                    </View>
+
+                    <Text style={styles.localMatchSectionLabel}>Clinical Features &amp; Symptoms</Text>
+                    <Text style={styles.clinicalFeaturesText}>{match.clinical_features}</Text>
+
+                    <Text style={styles.localMatchSectionLabel}>MoH Protocol</Text>
+                    {match.moh_protocol.split('\n').map((line, i) => (
+                      <Text key={i} style={styles.localMatchProtocolLine}>
+                        {line}
+                      </Text>
+                    ))}
+
+                    {match.urgent_referral_flags ? (
+                      <View style={styles.referralFlagBox}>
+                        <Text style={styles.referralFlagTitle}>⚠ Urgent Referral Flags</Text>
+                        <Text style={styles.referralFlagText}>{match.urgent_referral_flags}</Text>
+                      </View>
+                    ) : null}
+
+                    <Pressable
+                      style={styles.copyToPlanButton}
+                      onPress={() => insertLocalProtocolIntoPlan(match)}>
+                      <Text style={styles.copyToPlanButtonText}>Copy to Plan &amp; Prescriptions</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* AI fallback results */}
+            {guidelineResult?.success === false && guidelineResult.errorType !== 'network' && localMatches.length === 0 && (
               <View style={styles.modalErrorCard}>
                 <Text style={styles.modalErrorTitle}>Unable to retrieve guidelines</Text>
                 <Text style={styles.modalErrorText}>{guidelineResult.error}</Text>
               </View>
             )}
 
-            {guidelineResult?.success && (
+            {guidelineResult?.success && localMatches.length === 0 && (
               <>
                 <View style={styles.modalResultCard}>
-                  <Text style={styles.modalResultLabel}>Treatment guidelines</Text>
+                  <Text style={styles.modalResultLabel}>AI-Generated Guidance</Text>
                   {renderGuidelineBullets(guidelineResult.response).map((bullet, index) => (
                     <Text key={index} style={styles.modalBullet}>
                       • {bullet}
@@ -948,6 +1089,129 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
+  // Local Guideline Matches
+  localMatchesHeader: {
+    marginBottom: 12,
+  },
+  localMatchesTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 6,
+  },
+  mohBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#dcfce7',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#86efac',
+  },
+  mohBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#166534',
+    letterSpacing: 0.3,
+  },
+  localMatchCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+    borderLeftWidth: 4,
+    borderLeftColor: '#16a34a',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  localMatchCondition: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#0f172a',
+    marginBottom: 2,
+  },
+  localMatchCategory: {
+    fontSize: 12,
+    color: '#64748b',
+    marginBottom: 8,
+  },
+  localMatchSourceRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  mohBadgeSmall: {
+    backgroundColor: '#f0fdf4',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  mohBadgeSmallText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#15803d',
+  },
+  clinicalFeaturesText: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#475569',
+    backgroundColor: '#f8fafc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  localMatchSectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0284c7',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  localMatchProtocolLine: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#334155',
+    marginBottom: 2,
+  },
+  referralFlagBox: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  referralFlagTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#b91c1c',
+    marginBottom: 4,
+  },
+  referralFlagText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#7f1d1d',
+  },
+  copyToPlanButton: {
+    backgroundColor: '#16a34a',
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  copyToPlanButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+
   modalErrorCard: {
     backgroundColor: '#fef2f2',
     borderRadius: 12,

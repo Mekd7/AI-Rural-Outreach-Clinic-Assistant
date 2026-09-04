@@ -45,6 +45,21 @@ export default function ConsultationViewScreen() {
 
   const isMounted = useRef(true);
 
+  const prescriptionsText = useMemo(() => {
+    if (!consultation?.prescriptions?.trim() || consultation.prescriptions.trim() === '[]') {
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(consultation.prescriptions);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.join('\n');
+      }
+      return null;
+    } catch {
+      return consultation.prescriptions.trim() || null;
+    }
+  }, [consultation?.prescriptions]);
+
   useEffect(() => {
     return () => {
       isMounted.current = false;
@@ -121,21 +136,6 @@ export default function ConsultationViewScreen() {
       dateStyle: 'medium',
       timeStyle: 'short',
     });
-
-  const prescriptionsText = useMemo(() => {
-    if (!consultation?.prescriptions.trim() || consultation.prescriptions.trim() === '[]') {
-      return null;
-    }
-    try {
-      const parsed = JSON.parse(consultation.prescriptions);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.join('\n');
-      }
-      return null;
-    } catch {
-      return consultation.prescriptions.trim() || null;
-    }
-  }, [consultation?.prescriptions]);
 
   const handleGuidelineQuery = async () => {
     if (!guidelineQuery.trim()) {

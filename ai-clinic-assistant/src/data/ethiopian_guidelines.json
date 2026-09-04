@@ -1,0 +1,682 @@
+[
+  {
+    "id": "eth-ch2-001",
+    "condition": "Acute Cardiogenic Pulmonary Edema",
+    "category": "Cardiovascular Disorders (Chapter II)",
+    "keywords": ["pulmonary edema", "heart failure", "shortness of breath", "orthopnea", "furosemide", "dyspnea", "frothy sputum"],
+    "clinical_features": "Rapid onset of dyspnea at rest, marked orthopnea, cough with frothy/blood-stained sputum, tachypnea, severe hypoxemia, pulmonary crepitations and wheezing, S3 gallop, raised JVP, peripheral edema.",
+    "moh_protocol": "NON-PHARMACOLOGIC:\n- Maintain open airway.\n- Bed rest in sitting position (semi-fowler's).\n- Oxygen via nasal catheter or face mask.\n- Frequent vital sign monitoring.\n\nPHARMACOLOGIC:\n- Furosemide 40 to 80 mg IV bolus stat.\n- Refer immediately by ambulance.",
+    "urgent_referral_flags": "Emergency medical condition -> Administer IV Furosemide, oxygen, keep patient sitting upright, and transfer immediately by ambulance to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 39"
+  },
+  {
+    "id": "eth-ch2-002",
+    "condition": "Chronic Heart Failure",
+    "category": "Cardiovascular Disorders (Chapter II)",
+    "keywords": ["heart failure", "chf", "furosemide", "spironolactone", "digoxin", "edema", "breathlessness", "nyha"],
+    "clinical_features": "Breathlessness on exertion or lying flat (orthopnea), paroxysmal nocturnal dyspnea, night cough, lower chest crepitations, pitting pedal edema, ascites, tender hepatomegaly, raised JVP, S3 gallop.",
+    "moh_protocol": "NON-PHARMACOLOGIC:\n- Salt restriction (<6g/day), weight reduction, avoid alcohol/smoking.\n\nPHARMACOLOGIC (INITIAL THERAPY BEFORE REFERRAL):\n- Diuretics: Furosemide 40 mg PO once daily or BID PLUS Potassium Chloride SR 600–1200 mg PO q12h.\n- Spironolactone 25–50 mg PO daily (DO NOT combine with potassium supplements).\n- Digoxin 0.125 mg PO once daily.",
+    "urgent_referral_flags": "NYHA Class III-IV heart failure or worsening decompensation -> Start initial diuretic therapy and refer to hospital for specialized cardiac evaluation.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 40"
+  },
+  {
+    "id": "eth-ch2-003",
+    "condition": "Essential Hypertension",
+    "category": "Cardiovascular Disorders (Chapter II)",
+    "keywords": ["hypertension", "high blood pressure", "bp", "amlodipine", "nifedipine", "lisinopril", "enalapril", "hydrochlorothiazide"],
+    "clinical_features": "Asymptomatic in 90-95% of cases. Confirmed when SBP >= 140 mmHg and/or DBP >= 90 mmHg on 3 separate visits.\n- Stage 1: SBP 140–159 or DBP 90–99 mmHg\n- Stage 2: SBP >= 160 or DBP >= 100 mmHg",
+    "moh_protocol": "NON-PHARMACOLOGIC: Salt intake reduction (<1 tsp/day), 30min exercise 5-7 days/week, weight reduction, smoking cessation, alcohol restriction.\n\nPHARMACOLOGIC:\n- First Line Monotherapy: Amlodipine 2.5–10 mg PO once daily OR Enalapril 5–40 mg PO daily OR Hydrochlorothiazide 12.5–25 mg PO once daily.\n- Stage 2 Dual Therapy: Amlodipine 5mg + Enalapril 10mg PO daily.",
+    "urgent_referral_flags": "Hypertensive Emergency (BP >= 180/120 mmHg with acute target organ damage: stroke, angina, pulmonary edema, eclampsia) -> Give Hydralazine 5-10mg IV or Furosemide 40mg IV stat and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 42"
+  },
+  {
+    "id": "eth-ch2-004",
+    "condition": "Rheumatic Fever & Rheumatic Heart Disease",
+    "category": "Cardiovascular Disorders (Chapter II)",
+    "keywords": ["rheumatic fever", "streptococcal", "pharyngitis", "benzathine penicillin", "joint pain", "carditis", "jones criteria"],
+    "clinical_features": "Occurs 1-3 weeks after Group A Streptococcal throat infection in children age 5-15.\n- Major Manifestations (Modified Jones Criteria): Migratory polyarthritis, Carditis/pancarditis, Sydenham chorea, Erythema marginatum, Subcutaneous nodules.\n- Minor Manifestations: Arthralgia, fever, elevated ESR/CRP.",
+    "moh_protocol": "PRIMARY PREVENTION (Sore Throat): Procaine Penicillin 400,000–800,000 IU IM daily for 10 days OR Amoxicillin 500mg PO TID x 10 days.\n\nSECONDARY PROPHYLAXIS (Prevention of Recurrence):\n- Benzathine Penicillin G 1.2 million units IM (600,000 units if <30 kg) every 4 weeks.\n- Duration: 5 years or until age 18 (without carditis); 10 years or until age 25 (with carditis); Life-long (with persistent valvular disease).\n- Alternative (Penicillin allergy): Erythromycin 250 mg PO BID.",
+    "urgent_referral_flags": "Active carditis, new heart murmur, or heart failure signs in a child -> Initiate secondary prophylaxis and refer to pediatrician/cardiologist.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 48"
+  },
+  {
+    "id": "eth-ch3-001",
+    "condition": "Diabetes Mellitus (Type 1 & Type 2)",
+    "category": "Endocrine Disorders (Chapter III)",
+    "keywords": ["diabetes", "high blood sugar", "metformin", "glibenclamide", "insulin", "nph", "polyuria", "polydipsia", "fasting glucose"],
+    "clinical_features": "Polyuria (frequent urination), polydipsia (excessive thirst), unexplained weight loss, blurred vision, recurrent skin/vulval infections.\n- Diagnostic Criteria: Fasting Plasma Glucose >= 126 mg/dL OR Random Plasma Glucose >= 200 mg/dL OR HbA1c >= 6.5%.",
+    "moh_protocol": "TYPE 2 DIABETES:\n1. Non-Pharmacologic: Medical Nutrition Therapy (avoid refined sugars, high fiber), 150min/week aerobic exercise.\n2. First Line Oral Agent: Metformin 500 mg PO daily with meals (titrate up to 2000–2500 mg/day).\n3. Dual Therapy (if target HbA1c <7% or FPG <130 mg/dL not met in 3 months): Add Glibenclamide 2.5–5 mg PO daily 30 min before breakfast.\n\nTYPE 1 DIABETES:\n- Insulin Regimen: Intermediate-acting (NPH) twice daily (before breakfast & bedtime) + Regular short-acting Insulin twice daily (before breakfast & supper). Total daily dose 0.2–0.4 units/kg/day.",
+    "urgent_referral_flags": "Diabetic Ketoacidosis (DKA) / Hyperglycemic Hyperosmolar State (Kussmaul breathing, fruity breath, confusion, blood glucose > 300 mg/dL) -> Start Normal Saline IV infusion, give Regular Insulin 10 units IV/IM, and refer immediately to ICU.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 51"
+  },
+  {
+    "id": "eth-ch3-002",
+    "condition": "Acute Gouty Arthritis",
+    "category": "Endocrine Disorders (Chapter III)",
+    "keywords": ["gout", "uric acid", "joint pain", "big toe", "podagra", "ibuprofen", "indomethacin", "allopurinol"],
+    "clinical_features": "Excruciating sudden onset joint pain, redness, swelling, warmth. 80% of initial attacks involve the 1st metatarsophalangeal joint (base of big toe - podagra) or knee. Maximal severity within 12-24 hours.",
+    "moh_protocol": "ACUTE ATTACK MANAGEMENT:\n- Rest affected joint, cold compresses, low purine diet.\n- First Line NSAIDs: Ibuprofen 800 mg PO TID with meals OR Indomethacin 25–50 mg PO TID OR Diclofenac 50–75 mg PO BID for 5–7 days.\n\nCHRONIC GOUT / MAINTENANCE (Start ONLY 2 weeks AFTER acute attack subsides):\n- Allopurinol 100 mg PO daily (increase monthly by 100mg up to 300mg/day).\nCAUTION: DO NOT start Allopurinol during an acute gout attack!",
+    "urgent_referral_flags": "Suspected Septic Arthritis (single hot joint with high fever and systemic toxicity) -> Give analgesics and refer urgently for joint aspiration.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 57"
+  },
+  {
+    "id": "eth-ch4-001",
+    "condition": "Dyspepsia & Peptic Ulcer Disease (PUD)",
+    "category": "Gastrointestinal Disorders (Chapter IV)",
+    "keywords": ["pud", "peptic ulcer", "dyspepsia", "gastritis", "heartburn", "omeprazole", "cimetidine", "ranitidine", "epigastric pain"],
+    "clinical_features": "Epigastric pain/burning, postprandial fullness, early satiety, heartburn, belching, nausea. Pain aggravated or relieved by food intake.",
+    "moh_protocol": "NON-PHARMACOLOGIC: Avoid offensive foods/drinks (spicy, greasy, alcohol, coffee, NSAIDs).\n\nPHARMACOLOGIC:\n- First Line PPI: Omeprazole 20 mg PO BID (or once daily) for 4–8 weeks.\n- Alternative H2 Blocker: Cimetidine 400 mg PO BID x 4–8 weeks OR Ranitidine 150 mg PO BID x 4–8 weeks.",
+    "urgent_referral_flags": "Alarm Indicators (Hematemesis/vomiting blood, melena/black tarry stool, progressive dysphagia, persistent vomiting, unintended weight loss, abdominal mass, age > 55) -> Refer urgently for upper GI endoscopy.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 61"
+  },
+  {
+    "id": "eth-ch4-002",
+    "condition": "Hemorrhoids",
+    "category": "Gastrointestinal Disorders (Chapter IV)",
+    "keywords": ["hemorrhoids", "piles", "rectal bleeding", "bismuth subgallate", "lidocaine", "sitz bath", "constipation"],
+    "clinical_features": "Internal: Painless bright red rectal bleeding with or following bowel movements, prolapse during straining.\nExternal: Painful tender swelling at the anal verge.",
+    "moh_protocol": "NON-PHARMACOLOGIC: Fluid and fiber-rich diet, warm sitz baths 2-3x daily, avoid straining/constipation.\n\nPHARMACOLOGIC:\n- First Line: Bismuth Subgallate compound suppository insert 1 suppository rectally BID OR topical ointment BID for 5 days.\n- Alternative: Lidocaine + Zinc Oxide + Hydrocortisone suppository rectally once daily or BID x 5 days.",
+    "urgent_referral_flags": "Grade IV strangulated, thrombosed, or profusely bleeding hemorrhoids -> Refer for surgical evaluation.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 63"
+  },
+  {
+    "id": "eth-ch5-001",
+    "condition": "Anemia (Iron Deficiency & Megaloblastic)",
+    "category": "Hematologic Disorders (Chapter V)",
+    "keywords": ["anemia", "iron deficiency", "ferrous sulphate", "folic acid", "vitamin b12", "cobalamin", "pallor", "fatigue"],
+    "clinical_features": "Fatigue, weakness, dyspnea on exertion, palpitations, lightheadedness, conjunctival/palmar pallor, tachycardia, koilonychia (spoon nails in iron deficiency).\n- Diagnostic Threshold: Hb < 13 g/dL (men), Hb < 12 g/dL (women), Hb < 11 g/dL (pregnant women).",
+    "moh_protocol": "IRON DEFICIENCY ANEMIA:\n- First Line: Ferrous Sulphate 325 mg (65 mg elemental iron) PO TID between meals for at least 3 months after Hb normalizes.\n- Alternative: Ferrous Gluconate 325 mg PO 1-2 tabs TID.\n\nMEGALOBLASTIC ANEMIA:\n- Vitamin B12 Deficiency: Cobalamin 1000 mcg (1 mg) IM daily for 1 week, then weekly for 4 weeks, then 1 mg monthly for life.\n- Folate Deficiency: Folic Acid 1 to 5 mg PO daily for 1–4 months.\nCAUTION: Rule out Vitamin B12 deficiency BEFORE giving Folic Acid alone to prevent irreversible neurological damage!",
+    "urgent_referral_flags": "Severe anemia (Hb < 7 g/dL) with heart failure, severe hypoxic dyspnea, or ongoing active hemorrhage -> Transfuse packed RBC/whole blood and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 67"
+  },
+  {
+    "id": "eth-ch6-001",
+    "condition": "HIV/AIDS & Opportunistic Infections",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["hiv", "aids", "art", "haart", "tenofovir", "lamivudine", "efavirenz", "nevirapine", "cd4", "pmtct", "cotrimoxazole"],
+    "clinical_features": "Chronic fever (>1 month), chronic diarrhea (>1 month), unintentional weight loss > 10%, oral candidiasis/thrush, herpes zoster, persistent lymphadenopathy, recurrent bacterial pneumonia, TB co-infection.",
+    "moh_protocol": "DIAGNOSIS: National HIV Rapid Testing Algorithm.\n\nFIRST LINE ART REGIMEN FOR ADULTS/ADOLESCENTS:\n- Preferred FDC: Tenofovir (TDF 300mg) + Lamivudine (3TC 300mg) + Efavirenz (EFV 600mg) triple Fixed-Dose Combination once daily at bedtime.\n- Alternatives: TDF + 3TC + Nevirapine (NVP) OR Zidovudine (ZDV) + 3TC + NVP/EFV.\n\nPROPHYLAXIS FOR OPPORTUNISTIC INFECTIONS:\n- Cotrimoxazole (TMP-SMX) 960 mg PO once daily for all patients with CD4 < 350 or WHO Stage 3/4.",
+    "urgent_referral_flags": "WHO Stage 4 severe conditions (Cryptococcal meningitis, CNS Toxoplasmosis, Kaposi Sarcoma, suspected ART failure) -> Refer to Hospital ART Center.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 71"
+  },
+  {
+    "id": "eth-ch6-002",
+    "condition": "Amebiasis & Amebic Dysentery",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["amebiasis", "amebic dysentery", "metronidazole", "tinidazole", "diloxanide furoate", "bloody stool", "entamoeba"],
+    "clinical_features": "Gradual abdominal pain, lower cramps, bloody and mucoid diarrhea (10-12 stools/day), tenesmus, weight loss, low-grade fever. Stool exam shows E. histolytica trophozoites with ingested RBCs.",
+    "moh_protocol": "INVASIVE DISEASE / DYSENTERY:\n- First Line: Metronidazole 500 to 750 mg PO TID for 5–7 days (Children: 7.5 mg/kg PO TID x 5-7 days).\n- Alternative: Tinidazole 2g PO once daily for 3 consecutive days (Children: 50-60 mg/kg/day x 3 days).\n\nERADICATION OF CYSTS (To prevent relapse):\n- Diloxanide Furoate 500 mg PO TID for 10 days.",
+    "urgent_referral_flags": "Amebic Liver Abscess (fever, right upper quadrant pain, tender hepatomegaly) -> Refer urgently to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 81"
+  },
+  {
+    "id": "eth-ch6-003",
+    "condition": "Bacillary Dysentery (Shigellosis)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["bacillary dysentery", "shigella", "ciprofloxacin", "cotrimoxazole", "ceftriaxone", "bloody diarrhea", "fever"],
+    "clinical_features": "Severe abdominal cramps, high fever, watery progressing to mucoid or bloody diarrhea, tenesmus. Stool microscopy shows abundant pus cells (leukocytes) and RBCs.",
+    "moh_protocol": "SUPPORTIVE: Rehydration with ORS / IV fluids.\n\nPHARMACOLOGIC:\n- First Line: Ciprofloxacin 500 mg PO BID for 3–5 days.\n- Alternative 1: Sulfamethoxazole + Trimethoprim (Cotrimoxazole) 800/160 mg PO BID for 5–7 days.\n- Alternative 2: Ceftriaxone 1 to 2g IM/IV once daily for 3 days (Children: 20-50 mg/kg/day).\nCAUTION: Antidiarrheal agents (Loperamide) are CONTRAINDICATED in bacillary dysentery!",
+    "urgent_referral_flags": "Toxic megacolon, severe dehydration in infants, or persistent blood loss -> Give IV Ceftriaxone and refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 84"
+  },
+  {
+    "id": "eth-ch6-004",
+    "condition": "Intestinal Parasitic Helminthic Infestations",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["worms", "albendazole", "mebendazole", "praziquantel", "ascaris", "hookworm", "tapeworm", "taenia", "giardia"],
+    "clinical_features": "Abdominal cramps, bloating, nausea, anorexia, malnutrition, pallor (hookworm anemia), visible passage of adult worms in stool.",
+    "moh_protocol": "ASCARIASIS / HOOKWORM / TRICHURIASIS:\n- First Line: Albendazole 400 mg PO single dose (Children 1-2 yrs: 200mg single dose) OR Mebendazole 500 mg PO single dose (or 100mg BID for 3 days).\n- Alternative for Pregnant Women: Pyrantel Pamoate 700 mg PO single dose.\n\nTAENIASIS (TAPEWORM):\n- First Line: Praziquantel 600 mg (10 mg/kg) PO single dose OR Niclosamide 2g PO single dose.\n\nGIARDIASIS:\n- First Line: Tinidazole 2g PO single dose (Children: 50-75 mg/kg single dose) OR Metronidazole 250-500mg PO TID for 5 days.",
+    "urgent_referral_flags": "Intestinal obstruction from heavy Ascaris burden or severe hookworm anemia (Hb < 5 g/dL) -> Transfuse and refer.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 95"
+  },
+  {
+    "id": "eth-ch6-005",
+    "condition": "Leprosy (Hansen's Disease)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["leprosy", "hansens disease", "rifampicin", "dapsone", "clofazimine", "mdt", "skin patches", "numbness"],
+    "clinical_features": "Pale (hypopigmented) or reddish skin patches with definite loss of sensation, thickened/enlarged peripheral nerves with tenderness, painless wounds or burns on hands/feet.\n- Paucibacillary (PB): 1–5 skin lesions, single nerve trunk involved.\n- Multibacillary (MB): >= 6 skin lesions or positive slit skin smear for AFB.",
+    "moh_protocol": "PAUCIBACILLARY (PB) LEPROSY (6 MONTHS TREATMENT):\n- Rifampicin 600 mg PO once monthly (supervised) PLUS Dapsone 100 mg PO daily (self-administered) for 6 months.\n\nMULTIBACILLARY (MB) LEPROSY (12 MONTHS TREATMENT):\n- Rifampicin 600 mg PO once monthly (supervised) PLUS Clofazimine 300 mg PO once monthly (supervised) + 50 mg daily (self-administered) PLUS Dapsone 100 mg PO daily for 12 months.",
+    "urgent_referral_flags": "Leprosy Reaction (Type 1 Reversal / Type 2 ENL: painful swollen nerves, red ulcerating skin lesions, sudden loss of nerve function) -> Give Prednisolone 40mg daily and refer urgently to leprosy specialist.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 102"
+  },
+  {
+    "id": "eth-ch7-001",
+    "condition": "Urinary Tract Infection (UTI) & Pyelonephritis",
+    "category": "Kidney & Genitourinary Disorders (Chapter VII)",
+    "keywords": ["uti", "urinary tract infection", "cystitis", "pyelonephritis", "ciprofloxacin", "norfloxacin", "cotrimoxazole", "ceftriaxone", "dysuria"],
+    "clinical_features": "Uncomplicated Lower UTI (Cystitis): Dysuria, urinary frequency, urgency, suprapubic pain, cloudy urine.\nUpper UTI (Pyelonephritis): Flank/loin pain, fever, chills, costovertebral angle tenderness, nausea, vomiting.",
+    "moh_protocol": "UNCOMPLICATED CYSTITIS IN WOMEN:\n- First Line: Ciprofloxacin 500 mg PO BID for 3 days OR Norfloxacin 400 mg PO BID for 3 days.\n- Alternative: Cotrimoxazole 160/800 mg PO BID for 3 days.\n\nMILD/MODERATE PYELONEPHRITIS (OUTPATIENT):\n- First Line: Ciprofloxacin 500 mg PO BID for 7–10 days.\n- Alternative: Cotrimoxazole 160/800 mg PO BID for 14 days.\n\nSEVERE PYELONEPHRITIS (INPATIENT):\n- Ceftriaxone 1 to 2g IV once daily until fever subsides, then switch to oral Ciprofloxacin to complete 10-14 days.",
+    "urgent_referral_flags": "Complicated UTI, UTI in men, pregnancy pyelonephritis, or sepsis signs -> Start IV Ceftriaxone and refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 163"
+  },
+  {
+    "id": "eth-ch9-001",
+    "condition": "Acute Bacterial Meningitis",
+    "category": "Neurological Disorders (Chapter IX)",
+    "keywords": ["meningitis", "stiff neck", "nuchal rigidity", "fever", "ceftriaxone", "ampicillin", "kernig", "brudzinski", "epidemic"],
+    "clinical_features": "Intense headache, high fever, vomiting, photophobia, nuchal rigidity (stiff neck), positive Kernig's sign, positive Brudzinski's sign, altered mental status (GCS < 14), petechial/purpuric skin rash (N. meningitidis).",
+    "moh_protocol": "EMERGENCY PRE-REFERRAL MANAGEMENT:\n- Give immediate first dose of Ceftriaxone 2g IV (Children: 100 mg/kg IV stat).\n- Keep airway open, give oxygen, control seizures if present with Diazepam 10mg IV.\n- Refer urgently by ambulance to hospital.",
+    "urgent_referral_flags": "Bacterial meningitis is a reportable medical emergency -> Administer IV Ceftriaxone immediately and transfer to hospital without delay.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 171"
+  },
+  {
+    "id": "eth-ch9-002",
+    "condition": "Seizure Disorders & Epilepsy",
+    "category": "Neurological Disorders (Chapter IX)",
+    "keywords": ["epilepsy", "seizure", "convulsions", "valproic acid", "carbamazepine", "phenytoin", "phenobarbital", "status epilepticus"],
+    "clinical_features": "Sudden onset of involuntary motor movements, tonic-clonic convulsions, loss of consciousness, tongue biting, urinary incontinence, post-ictal confusion.",
+    "moh_protocol": "CHRONIC EPILEPSY MAINTENANCE (MONOTHERAPY):\n- Generalized Tonic-Clonic: Valproic Acid 750–2000 mg/day PO in 2-3 divided doses OR Phenytoin 300–400 mg/day PO OR Carbamazepine 600–1800 mg/day PO.\n- Absence Seizures: Valproic Acid OR Ethosuximide 750–1250 mg/day PO.\n\nSTATUS EPILEPTICUS EMERGENCY (Continuous Seizures > 5-15 min):\n1. Secure airway, give oxygen, establish IV line.\n2. First Line: Diazepam 10 mg IV over 1-2 minutes (repeat once after 5 min if no response).\n3. Second Line: Phenytoin 20 mg/kg IV infusion at 50 mg/min.\n4. Third Line: Phenobarbital 20 mg/kg IV at 60 mg/min.",
+    "urgent_referral_flags": "Status Epilepticus refractory to Diazepam, new adult-onset epilepsy, or pregnancy with epilepsy -> Control seizures and refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 174"
+  },
+  {
+    "id": "eth-ch12-001",
+    "condition": "Acute Bronchitis & Cough Management",
+    "category": "Respiratory System Disorders (Chapter XII)",
+    "keywords": ["bronchitis", "cough", "dextromethorphan", "codeine", "guaifenesin", "amoxicillin", "rhonchi"],
+    "clinical_features": "Productive or dry cough, upper respiratory symptoms (rhinorrhea), low-grade fever, wheezing or rhonchi on chest auscultation.",
+    "moh_protocol": "DRY COUGH SYMPTOMATIC:\n- First Line: Dextromethorphan 15–30 mg PO TID to QID (Children 6-12 yrs: 7.5-15mg TID).\n- Alternative: Codeine Phosphate 10–20 mg PO TID/QID.\n\nPRODUCTIVE COUGH:\n- Guaifenesin 200–400 mg PO QID.\n\nBACTERIAL COMPLICATION (High fever, purulent sputum, diabetes/HIV co-morbidity):\n- Amoxicillin 500 mg PO TID for 7–10 days.",
+    "urgent_referral_flags": "Cough lasting > 2 weeks -> Rule out Tuberculosis (order sputum AFB smear / GeneXpert).",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 186"
+  },
+  {
+    "id": "eth-ch13-001",
+    "condition": "Acute Poisoning & Overdose Toxidromes",
+    "category": "Emergency Conditions (Chapter XIII)",
+    "keywords": ["poisoning", "overdose", "organophosphate", "atropine", "activated charcoal", "antidote", "toxidrome", "salivation"],
+    "clinical_features": "Toxidrome Recognition:\n- Cholinergic (Organophosphate/Pesticide): Excessive salivation, lacrimation, urination, diarrhea, vomiting, bronchospasm, miosis (pinpoint pupils), bradycardia.\n- Anticholinergic: Dry skin, fever, tachycardia, dilated pupils, delirium.\n- Opioid: CNS depression, respiratory depression, pinpoint pupils.",
+    "moh_protocol": "GENERAL MANAGEMENT:\n1. Maintain airway, breathing, oxygenation, IV fluids.\n2. Decontamination: Activated Charcoal 50g PO/NG tube diluted in 400ml water within 1 hour of ingestion.\nCAUTION: Gastric lavage / vomiting is CONTRAINDICATED in caustic/corrosive or hydrocarbon ingestion!\n\nSPECIFIC ANTIDOTES:\n- Organophosphate / Carbamate: Atropine 0.5–2.0 mg IV stat, repeat q3-5min until bronchial secretions dry up.\n- Opioids: Naloxone 0.4–2.0 mg IV push.\n- Paracetamol: N-Acetylcysteine 140 mg/kg PO loading dose.\n- Benzodiazepines: Flumazenil 0.2 mg IV.",
+    "urgent_referral_flags": "Severe organophosphate poisoning requiring atropinization, organ failure, or persistent coma -> Administer antidote and transfer to ICU.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 214"
+  },
+  {
+    "id": "eth-ch15-001",
+    "condition": "Scabies Infestation",
+    "category": "Dermatological Disorders (Chapter XV)",
+    "keywords": ["scabies", "itch", "permethrin", "benzyl benzoate", "sulfur ointment", "ivermectin", "mite", "nocturnal itching"],
+    "clinical_features": "Intensely itchy red papules and burrows in web spaces of fingers, wrists, axillae, belt line, and groin. Severe nocturnal itching. Family members usually affected.",
+    "moh_protocol": "TOPICAL TREATMENT (FIRST LINE):\n- Permethrin 5% cream: Apply thin film to entire body from neck down, leave for 8–14 hours, then wash off. Repeat after 7 days.\n- Alternative 1: Benzyl Benzoate 25% lotion: Apply neck to toe for 3 consecutive evenings.\n- Alternative 2: Sulphur Ointment 10% (5% in young children): Apply for 3 consecutive nights.\n\nSYSTEMIC TREATMENT (Crusted/Norwegian Scabies or Mass Outbreaks):\n- Ivermectin 200 mcg/kg PO single dose.\n\nENVIRONMENTAL HYGIENE: Wash clothes/bedding in hot water or iron clothes after washing. Treat ALL household contacts simultaneously!",
+    "urgent_referral_flags": "Secondary bacterial infection (superimposed impetigo/cellulitis) -> Treat with oral Cloxacillin 500mg QID before applying scabicides.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 292"
+  },
+  {
+    "id": "eth-ch16-001",
+    "condition": "Syndromic Management of STIs (Urethral & Vaginal Discharge)",
+    "category": "Sexually Transmitted Infections (Chapter XVI)",
+    "keywords": ["sti", "std", "urethral discharge", "vaginal discharge", "gonorrhea", "chlamydia", "ciprofloxacin", "doxycycline", "metronidazole"],
+    "clinical_features": "Urethral Discharge in Men: Purulent discharge, dysuria.\nVaginal Discharge in Women: Abnormal quantity, foul odor, yellow/greenish discharge, vulvar itching.",
+    "moh_protocol": "URETHRAL DISCHARGE SYNDROME (GONORRHEA + CHLAMYDIA):\n- Ciprofloxacin 500 mg PO single dose (or Spectinomycin 2g IM) PLUS Doxycycline 100 mg PO BID for 7 days (or Erythromycin 500mg QID x 7d in pregnancy).\n\nVAGINAL DISCHARGE SYNDROME (TRICHOMONIASIS + BV + CANDIDA):\n- Metronidazole 2g PO single dose (or 500mg BID x 7d) PLUS Clotrimazole 200mg vaginal tab at bedtime for 3 nights.\n\nPARTNER MANAGEMENT: Always notify, counsel, and treat sexual partners!",
+    "urgent_referral_flags": "Treatment failure or persistent symptoms after 7 days -> Refer to STI clinic for culture and sensitivity.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 298"
+  },
+  {
+    "id": "eth-ch17-001",
+    "condition": "Trachoma Prevention & Treatment",
+    "category": "Ophthalmological Disorders (Chapter XVII)",
+    "keywords": ["trachoma", "chlamydia trachomatis", "blindness", "tetracycline", "azithromycin", "safe strategy", "trichiasis"],
+    "clinical_features": "Foreign body sensation, redness, mucopurulent eye discharge, conjunctival follicular inflammation, tarsal scarring, entropion (inward turning of eyelid), trichiasis (eyelashes rubbing eyeball), corneal opacity.",
+    "moh_protocol": "WHO SAFE STRATEGY:\n- S = Surgery for Trichiasis (TT).\n- A = Antibiotics for active infection.\n- F = Facial cleanliness.\n- E = Environmental sanitation.\n\nPHARMACOLOGIC:\n- First Line Topical: Tetracycline 1% eye ointment applied BID for 6 weeks.\n- First Line Systemic (Mass Treatment / Intense Trachoma): Azithromycin 20 mg/kg PO single dose OR Doxycycline 100 mg PO daily for 3 weeks.",
+    "urgent_referral_flags": "Trachomatous Trichiasis (TT) with eyelashes touching cornea -> Refer to cataract/trachoma surgeon for eyelid bilamellar rotation surgery.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 339"
+  },
+  {
+    "id": "eth-ch18-001",
+    "condition": "Acute Otitis Media & Otitis Externa",
+    "category": "Ear, Nose and Throat Disorders (Chapter XVIII)",
+    "keywords": ["otitis media", "ear infection", "earache", "ear discharge", "amoxicillin", "ciprofloxacin", "tympanic membrane"],
+    "clinical_features": "Pulsating ear pain worse at night, fever (39-40°C in children), hearing loss, ear discharge (otorrhea) following tympanic membrane perforation, mastoid tenderness.",
+    "moh_protocol": "ACUTE OTITIS MEDIA:\n- First Line: Amoxicillin 500 mg PO TID for 10–15 days for adults (Children >6 yrs: 250 mg PO TID x 10d; Children <6 yrs: 125–250 mg PO TID x 10d).\n- Alternative: Amoxicillin-Clavulanate 625 mg PO BID for 10 days OR Ciprofloxacin 500 mg PO BID for 7-10 days.\n- Analgesia: Paracetamol 30–40 mg/kg/day PO.\n\nOTITIS EXTERNA:\n- Oxytetracycline + Polymyxin B + Hydrocortisone ear drops 2-3 drops 2-3x daily.",
+    "urgent_referral_flags": "Swelling/redness behind the ear (Acute Mastoiditis), facial nerve paralysis, or severe vertigo -> Refer urgently to ENT specialist.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 344"
+  },
+  {
+    "id": "eth-ch6-006",
+    "condition": "Malaria (Uncomplicated & Severe)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["malaria", "plasmodium", "falciparum", "vivax", "artemether", "lumefantrine", "coartem", "chloroquine", "quinine", "fever", "rdt", "chills"],
+    "clinical_features": "Fever (often periodic), chills, rigors, headache, myalgia, nausea, vomiting, splenomegaly. Severe malaria: altered consciousness, severe anemia (Hb <5 g/dL), respiratory distress, hypoglycemia, jaundice, renal failure, convulsions.",
+    "moh_protocol": "UNCOMPLICATED P. FALCIPARUM:\n- First Line: Artemether-Lumefantrine (Coartem) 20/120 mg tabs: 4 tabs PO at 0, 8, 24, 36, 48, 60 hours (total 24 tabs over 3 days).\n\nUNCOMPLICATED P. VIVAX:\n- Chloroquine 25 mg base/kg total over 3 days (10 mg/kg Day 1, 10 mg/kg Day 2, 5 mg/kg Day 3) PLUS Primaquine 0.25 mg/kg/day PO for 14 days (radical cure; check G6PD).\n\nSEVERE MALARIA (PRE-REFERRAL):\n- Artesunate 2.4 mg/kg IV/IM at 0, 12, 24h OR Artemether 3.2 mg/kg IM loading then 1.6 mg/kg daily OR Quinine 20 mg/kg IV in D5W over 4h.\n- Treat hypoglycemia, control seizures, refer urgently.",
+    "urgent_referral_flags": "Severe malaria (cerebral malaria, Hb<5, respiratory distress, renal failure, hypoglycemia, hyperparasitemia >5%) -> Give pre-referral artesunate and transfer immediately.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 85"
+  },
+  {
+    "id": "eth-ch6-007",
+    "condition": "Tuberculosis (Pulmonary & Extrapulmonary)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["tuberculosis", "tb", "afb", "genexpert", "rifampicin", "isoniazid", "pyrazinamide", "ethambutol", "rhze", "dots", "cough", "hemoptysis"],
+    "clinical_features": "Chronic cough >= 2 weeks, hemoptysis, night sweats, fever, weight loss, chest pain. Extrapulmonary: cervical lymphadenopathy, pleural effusion, spinal TB (Pott's disease), abdominal TB, TB meningitis.",
+    "moh_protocol": "DIAGNOSIS: Sputum AFB smear x2 or GeneXpert MTB/RIF.\n\nNEW PATIENT (2RHZE/4RH):\n- Intensive Phase (2 months): Rifampicin + Isoniazid + Pyrazinamide + Ethambutol daily (FDC by weight).\n- Continuation Phase (4 months): Rifampicin + Isoniazid daily.\n\nRETREATMENT (2SRHZE/1RHZE/5RHE):\n- Add Streptomycin 1g IM daily first 2 months.\n\nAll TB patients: HIV test, DOT mandatory.",
+    "urgent_referral_flags": "MDR-TB suspected (GeneXpert Rif-resistant), TB meningitis, massive hemoptysis, treatment failure -> Refer to hospital/MDR-TB center.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 108"
+  },
+  {
+    "id": "eth-ch6-008",
+    "condition": "Anthrax",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["anthrax", "bacillus anthracis", "cutaneous anthrax", "black eschar", "penicillin", "doxycycline", "ciprofloxacin"],
+    "clinical_features": "Cutaneous: painless papule -> vesicle -> black necrotic eschar with edema; fever, lymphadenopathy. Inhalational: flu-like prodrome, severe dyspnea, shock. GI: severe abdominal pain, bloody diarrhea.",
+    "moh_protocol": "CUTANEOUS ANTHRAX:\n- Ciprofloxacin 500 mg PO BID for 7-10 days OR Doxycycline 100 mg PO BID for 7-10 days.\n- Alternative: Amoxicillin 500 mg PO TID. Do not incise eschar.\n\nINHALATIONAL/SYSTEMIC:\n- Ciprofloxacin 400 mg IV q12h OR Doxycycline 100 mg IV q12h PLUS additional agent. Urgent referral.\n\nPOST-EXPOSURE: Ciprofloxacin 500 mg PO BID for 60 days.",
+    "urgent_referral_flags": "Suspected inhalational, GI, or systemic anthrax; extensive cutaneous with systemic toxicity -> Start IV antibiotics and refer by ambulance.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-009",
+    "condition": "Brucellosis",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["brucellosis", "brucella", "undulant fever", "doxycycline", "rifampicin", "cotrimoxazole", "animal exposure"],
+    "clinical_features": "Undulant fever, night sweats, fatigue, arthralgia (hip, knee, sacroiliac), hepatosplenomegaly, lymphadenopathy. Contact with cattle/sheep/goats or unpasteurized milk.",
+    "moh_protocol": "ADULTS:\n- Doxycycline 100 mg PO BID x 6 weeks PLUS Rifampicin 600-900 mg PO daily x 6 weeks.\n\nALTERNATIVE (pregnancy/children):\n- Cotrimoxazole 800/160 mg PO BID x 6 weeks PLUS Rifampicin.\n\nPEDIATRIC: Cotrimoxazole 40 mg/kg/day TMP in 2 doses PLUS Rifampicin 15-20 mg/kg/day x 6 weeks.",
+    "urgent_referral_flags": "Neurobrucellosis, endocarditis, large abscesses, relapse after two courses -> Refer for parenteral therapy.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-010",
+    "condition": "Leishmaniasis (Kala-azar / Visceral Leishmaniasis)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["kala-azar", "leishmaniasis", "visceral leishmaniasis", "hepatosplenomegaly", "pancytopenia", "sodium stibogluconate", "amphotericin"],
+    "clinical_features": "Prolonged irregular fever, weight loss, massive hepatosplenomegaly, pancytopenia, hyperpigmentation. Endemic in lowland areas (Tigray, Amhara, SNNPR).",
+    "moh_protocol": "REFER TO SPECIALIZED TREATMENT CENTER.\n\nFIRST-LINE:\n- Sodium Stibogluconate (SSG) 20 mg/kg/day IV/IM for 30 days.\n- Alternative: Liposomal Amphotericin B 3-5 mg/kg/dose IV, total 15-21 mg/kg.\n\nHIV CO-INFECTION: Liposomal Amphotericin B preferred. Start ART + Cotrimoxazole.\n\nSUPPORTIVE: Transfuse if Hb <5, nutritional rehabilitation.",
+    "urgent_referral_flags": "All confirmed VL cases -> refer to treatment center. Severe anemia, bleeding, jaundice, HIV co-infection require urgent referral.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-011",
+    "condition": "Onchocerciasis (River Blindness)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["onchocerciasis", "river blindness", "onchocerca volvulus", "ivermectin", "skin nodules", "pruritus", "blindness"],
+    "clinical_features": "Intense pruritus, papular dermatitis (leopard/lizard skin), subcutaneous nodules over bony prominences, visual impairment progressing to blindness. Endemic near fast-flowing rivers in SW Ethiopia.",
+    "moh_protocol": "TREATMENT:\n- Ivermectin 150 mcg/kg PO single dose, repeated every 6-12 months.\n- Contraindicated in pregnant/breastfeeding women (first week), children <5 yrs or <15 kg.\n\nNODULECTOMY: Excise accessible nodules.\n\nMASS DRUG ADMINISTRATION: Annual/biannual Ivermectin in endemic communities.\n\nSYMPTOMATIC: Antihistamines, emollients.",
+    "urgent_referral_flags": "Ocular involvement (keratitis, optic atrophy) -> Refer to ophthalmologist. Severe Mazzotti reaction -> Corticosteroids and supportive care.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-012",
+    "condition": "Relapsing Fever",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["relapsing fever", "borrelia recurrentis", "louse-borne", "tick-borne", "penicillin", "doxycycline", "tetracycline", "jarisch-herxheimer"],
+    "clinical_features": "Sudden high fever (39-41°C), rigors, headache, myalgia, arthralgia, hepatosplenomegaly. Fever lasts 3-7 days then resolves, recurring 1-2 weeks later. Petechiae, epistaxis, jaundice in severe cases.",
+    "moh_protocol": "LBRF:\n- Procaine Penicillin 400,000 IU IM single dose OR Doxycycline 100 mg PO single dose.\n- Alternative: Tetracycline 500 mg PO single dose OR Erythromycin 500 mg PO single dose.\n\nTBRF:\n- Doxycycline 100 mg PO BID for 7-10 days OR Tetracycline 500 mg PO QID for 7-10 days.\n\nJARISCH-HERXHEIMER: Common 2-4h after first dose (fever spike, rigors, hypotension). Give IV fluids and Paracetamol.",
+    "urgent_referral_flags": "Severe Jarisch-Herxheimer with shock, DIC, myocarditis, hepatic/CNS involvement -> Resuscitate and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-013",
+    "condition": "Schistosomiasis (Bilharzia)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["schistosomiasis", "bilharzia", "schistosoma", "mansoni", "haematobium", "praziquantel", "hematuria", "hepatosplenomegaly"],
+    "clinical_features": "S. mansoni: abdominal pain, bloody diarrhea, hepatosplenomegaly, portal hypertension. S. haematobium: terminal hematuria, dysuria, urinary frequency. Acute Katayama fever: fever, urticaria, eosinophilia.",
+    "moh_protocol": "TREATMENT:\n- Praziquantel 40 mg/kg PO in 2 divided doses in one day (with food).\n\nMASS DRUG ADMINISTRATION:\n- School-age children in endemic areas: annual Praziquantel.\n\nSUPPORTIVE: Ferrous Sulphate for anemia. Repeat treatment after 4-6 weeks if needed.",
+    "urgent_referral_flags": "Hematemesis from portal hypertension, severe hepatosplenomegaly, urinary obstruction -> Refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-014",
+    "condition": "Tetanus",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["tetanus", "clostridium tetani", "lockjaw", "trismus", "opisthotonos", "diazepam", "tetanus immunoglobulin", "metronidazole"],
+    "clinical_features": "Trismus (lockjaw), risus sardonicus, neck stiffness, dysphagia, opisthotonus, generalized tonic muscle spasms triggered by stimuli, autonomic instability. Incubation 3-21 days after wound.",
+    "moh_protocol": "1. Airway; may need tracheostomy.\n2. Wound debridement.\n3. TIG 3,000-6,000 IU IM.\n4. Metronidazole 500 mg IV q8h for 7-10 days (preferred) OR Procaine Penicillin 1.2 million IU IM daily x 10 days.\n5. Diazepam 10-30 mg IV slowly, then 5-10 mg IV q1-4h as needed.\n6. Tetanus Toxoid 0.5 mL IM.\n7. Refer to ICU.",
+    "urgent_referral_flags": "All tetanus cases are emergencies -> Administer TIG, Diazepam, Metronidazole, and refer to hospital ICU immediately.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-015",
+    "condition": "Toxoplasmosis",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["toxoplasmosis", "toxoplasma gondii", "pyrimethamine", "sulfadiazine", "cotrimoxazole", "lymphadenopathy", "immunocompromised", "encephalitis"],
+    "clinical_features": "Immunocompetent: often asymptomatic or mild lymphadenopathy, fever, malaise. HIV/AIDS: cerebral toxoplasmosis with headache, confusion, focal deficits, seizures. Congenital: chorioretinitis, hydrocephalus, intracranial calcifications.",
+    "moh_protocol": "IMMUNOCOMPETENT: usually self-limited.\n\nCEREBRAL (HIV/AIDS):\n- Pyrimethamine 200 mg PO loading then 50-75 mg/day PLUS Sulfadiazine 1-1.5 g PO QID PLUS Folinic acid 10-25 mg PO daily x >=6 weeks.\n- Alternative: Cotrimoxazole TMP-SMX 10 mg/kg/day TMP in 2 doses x 6 weeks.\n\nPROPHYLAXIS: Continue half-dose until CD4 >200 for >6 months on ART.\n\nPREGNANCY: Spiramycin 1 g PO TID until delivery.",
+    "urgent_referral_flags": "Cerebral toxoplasmosis with altered consciousness, seizures, focal deficits -> Start empiric treatment and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-016",
+    "condition": "Typhus (Louse-Borne & Flea-Borne)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["typhus", "rickettsia prowazekii", "rickettsia typhi", "louse-borne", "doxycycline", "chloramphenicol", "fever", "rash"],
+    "clinical_features": "Epidemic (louse-borne): sudden high fever, severe headache, myalgia, macular trunk rash (spares face/palms/soles), confusion. Endemic (flea-borne/murine): milder fever, headache, maculopapular rash.",
+    "moh_protocol": "FIRST-LINE:\n- Doxycycline 100 mg PO single dose (epidemic) or BID for 7 days (endemic).\n\nALTERNATIVE (pregnancy, children <8 yrs):\n- Chloramphenicol 500 mg PO QID for 7 days.\n\nSUPPORTIVE: IV fluids, Paracetamol.\n\nPREVENTION: Delousing with Permethrin 1% dusting powder; wash clothes/bedding in hot water.",
+    "urgent_referral_flags": "Severe epidemic typhus with DIC, gangrene, renal failure, myocarditis, CNS -> Start Doxycycline and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch6-017",
+    "condition": "Varicella (Chickenpox)",
+    "category": "Infectious Diseases (Chapter VI)",
+    "keywords": ["varicella", "chickenpox", "herpes zoster", "acyclovir", "vesicles", "pruritus", "calamine"],
+    "clinical_features": "Low-grade fever, malaise, then pruritic rash starting on trunk: macules -> papules -> vesicles (dewdrop on rose petal) -> crusts. Lesions in all stages simultaneously. Highly contagious.",
+    "moh_protocol": "UNCOMPLICATED:\n- Calamine lotion, Paracetamol (avoid Aspirin), keep nails short.\n- Antibiotics only if secondary bacterial skin infection: Cloxacillin 250-500 mg PO QID x 7 days.\n\nSEVERE/IMMUNOCOMPROMISED:\n- Acyclovir 800 mg PO 5x daily x 7 days (adults) or 20 mg/kg PO QID x 5 days (children).\n- Severe: Acyclovir 10 mg/kg IV q8h x 7-10 days.\n\nISOLATION: Until all lesions crusted over.",
+    "urgent_referral_flags": "Varicella pneumonia, encephalitis, neonatal varicella, or disseminated disease in immunocompromised -> Start IV Acyclovir and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch8-001",
+    "condition": "Osteoarthritis",
+    "category": "Musculoskeletal Disorders (Chapter VIII)",
+    "keywords": ["osteoarthritis", "oa", "joint pain", "stiffness", "paracetamol", "ibuprofen", "diclofenac", "degenerative joint"],
+    "clinical_features": "Gradual onset joint pain worsened by activity and relieved by rest, morning stiffness <30 minutes, crepitus, bony enlargement (Heberden/Bouchard nodes), decreased range of motion. Commonly knees, hips, hands, spine.",
+    "moh_protocol": "NON-PHARMACOLOGIC: Weight reduction, low-impact exercise, physiotherapy, assistive devices.\n\nPHARMACOLOGIC:\n- Paracetamol 500-1000 mg PO TID-QID (max 4 g/day).\n- NSAIDs: Ibuprofen 400-800 mg PO TID OR Diclofenac 50 mg PO BID-TID.\n- Topical: Diclofenac gel TID.\nCAUTION: Shortest NSAID duration; avoid with renal impairment, GI ulcer, elderly.",
+    "urgent_referral_flags": "Suspected septic arthritis (hot swollen joint with fever), severe deformity -> Refer to orthopedic specialist.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch8-002",
+    "condition": "Low Back Pain",
+    "category": "Musculoskeletal Disorders (Chapter VIII)",
+    "keywords": ["low back pain", "lumbago", "sciatica", "diclofenac", "paracetamol", "muscle spasm", "radiculopathy"],
+    "clinical_features": "Localized lumbosacral pain; may radiate to buttocks/legs (sciatica). Red flags: bladder/bowel dysfunction, saddle anesthesia, progressive neurologic deficit, trauma, weight loss.",
+    "moh_protocol": "NON-PHARMACOLOGIC: Avoid bed rest >2 days, continue activities, physiotherapy, hot/cold packs, correct posture.\n\nPHARMACOLOGIC:\n- Paracetamol 1 g PO TID-QID.\n- NSAIDs: Diclofenac 50 mg PO BID-TID x 5-7 days OR Ibuprofen 400 mg PO TID.\n- Muscle spasm: Diazepam 5 mg PO BID-TID x 3-5 days.\n- Sciatica: Amitriptyline 25-75 mg PO at bedtime.",
+    "urgent_referral_flags": "Cauda equina syndrome, progressive motor weakness, suspected fracture/infection/malignancy -> Refer urgently for imaging and surgical evaluation.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch11-001",
+    "condition": "Depression (Major Depressive Disorder)",
+    "category": "Psychiatric Disorders (Chapter XI)",
+    "keywords": ["depression", "mdd", "amitriptyline", "fluoxetine", "sadness", "suicidal", "insomnia", "anhedonia"],
+    "clinical_features": "Persistent depressed mood, anhedonia, fatigue, sleep/appetite changes, poor concentration, guilt/worthlessness, psychomotor retardation, suicidal ideation. Duration >=2 weeks.",
+    "moh_protocol": "MILD-MODERATE: Supportive counseling, psychoeducation, behavioral activation.\n\nMODERATE-SEVERE:\n- Amitriptyline 25 mg PO at bedtime, titrate to 75-150 mg/day.\n- Alternative: Fluoxetine 20 mg PO every morning (max 40 mg).\n- Continue >=6-9 months after remission.\n\nSUICIDE RISK: Ask directly; if active plan, ensure safety and do not leave alone; refer urgently.",
+    "urgent_referral_flags": "Active suicidal ideation with plan, psychotic features, or severe functional impairment -> Ensure safety and refer urgently to psychiatry.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch12-002",
+    "condition": "Community-Acquired Pneumonia",
+    "category": "Respiratory System Disorders (Chapter XII)",
+    "keywords": ["pneumonia", "cap", "amoxicillin", "ceftriaxone", "cough", "fever", "consolidation", "crackles"],
+    "clinical_features": "Acute fever, productive cough, pleuritic chest pain, dyspnea, tachypnea. Exam: bronchial breath sounds, crackles, dullness over consolidation.",
+    "moh_protocol": "OUTPATIENT (MILD):\n- Amoxicillin 500 mg-1 g PO TID x 5-7 days.\n- Alternative: Erythromycin 500 mg PO QID x 7 days OR Azithromycin 500 mg day 1 then 250 mg daily x 4 days.\n\nINPATIENT (MODERATE-SEVERE):\n- Ceftriaxone 1-2 g IV daily x 7-10 days PLUS Azithromycin 500 mg IV/PO daily.\n- Oxygen if SpO2 <90%, IV fluids, Paracetamol.\n\nPEDIATRIC: Amoxicillin 40-90 mg/kg/day in 2-3 doses x 5 days. Severe: Ceftriaxone 50-80 mg/kg IV/IM daily.",
+    "urgent_referral_flags": "Severe pneumonia (RR >30, SpO2 <90%, confusion, multilobar, septic shock) or no improvement after 48-72h -> Refer to hospital for IV antibiotics.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 188"
+  },
+  {
+    "id": "eth-ch12-003",
+    "condition": "Bronchial Asthma",
+    "category": "Respiratory System Disorders (Chapter XII)",
+    "keywords": ["asthma", "wheeze", "salbutamol", "beclomethasone", "prednisolone", "inhaler", "bronchospasm", "dyspnea"],
+    "clinical_features": "Recurrent wheeze, cough (especially nocturnal), chest tightness, dyspnea. Triggered by allergens, cold air, exercise, infections. Bilateral expiratory wheeze, prolonged expiration.",
+    "moh_protocol": "ACUTE EXACERBATION:\n- Salbutamol 2-4 puffs via spacer every 20 min x 3 OR nebulization 2.5-5 mg.\n- Prednisolone 40-50 mg PO daily x 5-7 days.\n- Oxygen to keep SpO2 >90%.\n- No response: Aminophylline 250 mg IV slowly over 20 min.\n\nCHRONIC (STEPWISE):\n- Step 1: As-needed Salbutamol.\n- Step 2: Beclomethasone 200-400 mcg/day inhaled BID.\n- Step 3-4: Increase inhaled steroid or add long-acting beta-agonist.",
+    "urgent_referral_flags": "Life-threatening asthma (silent chest, cyanosis, bradycardia, exhaustion, SpO2 <90%) -> Nebulize Salbutamol continuously, IV steroids, transfer immediately.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 190"
+  },
+  {
+    "id": "eth-ch13-002",
+    "condition": "Near Drowning",
+    "category": "Emergency Conditions (Chapter XIII)",
+    "keywords": ["near drowning", "submersion", "aspiration", "hypothermia", "resuscitation", "pulmonary edema"],
+    "clinical_features": "History of submersion. Range: asymptomatic to cough, tachypnea, wheeze, frothy sputum, cyanosis, hypothermia, altered consciousness, cardiac arrest.",
+    "moh_protocol": "1. Remove from water; start CPR immediately if apneic/pulseless (prioritize ventilation).\n2. C-spine precautions if trauma/diving suspected.\n3. Oxygen, keep warm, remove wet clothes.\n4. If breathing: recovery position, continuous monitoring.\n5. IV Normal Saline for hypotension.\n6. Pulmonary edema: Furosemide 40 mg IV.\n7. Bronchospasm: Salbutamol nebulization.\n\nObserve all patients 6-24h (risk of delayed pulmonary edema).",
+    "urgent_referral_flags": "All near-drowning with respiratory symptoms, altered consciousness, or cardiac arrest -> Stabilize and refer to hospital for observation.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch13-003",
+    "condition": "Shock (Hypovolemic, Septic, Anaphylactic)",
+    "category": "Emergency Conditions (Chapter XIII)",
+    "keywords": ["shock", "hypovolemic", "septic", "anaphylactic", "hypotension", "tachycardia", "epinephrine", "adrenaline", "iv fluids"],
+    "clinical_features": "Tachycardia, hypotension (SBP <90), weak pulse, cold clammy skin, pallor, oliguria, altered mental status. Septic: fever/hypothermia. Anaphylactic: urticaria, angioedema, bronchospasm.",
+    "moh_protocol": "GENERAL:\n1. Airway, high-flow oxygen.\n2. Two large-bore IVs.\n3. Rapid NS or RL 1-2 L bolus (children 20 mL/kg), repeat.\n4. Trendelenburg position.\n\nHYPOVOLEMIC: Control bleeding, transfuse if Hb <7.\n\nSEPTIC: Ceftriaxone 2 g IV + Metronidazole 500 mg IV; identify/drain source.\n\nANAPHYLACTIC: Epinephrine 0.5 mg IM thigh (1:1000), repeat q5-15 min; Hydrocortisone 200 mg IV; Chlorpheniramine 10 mg IV/IM.",
+    "urgent_referral_flags": "All shock is a medical emergency -> Resuscitate and transfer immediately.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 210"
+  },
+  {
+    "id": "eth-ch13-004",
+    "condition": "Stroke / Cerebrovascular Accident",
+    "category": "Emergency Conditions (Chapter XIII)",
+    "keywords": ["stroke", "cva", "cerebrovascular", "hemiplegia", "aphasia", "facial droop", "aspirin"],
+    "clinical_features": "Sudden unilateral weakness, facial droop, slurred speech or aphasia, visual loss, severe headache, altered consciousness, dizziness, dysphagia.",
+    "moh_protocol": "1. Airway, oxygen if SpO2 <94%.\n2. NPO until swallowing assessed.\n3. IV access, Normal Saline maintenance (avoid dextrose).\n4. Monitor BP: do NOT aggressively lower unless >220/120 or hypertensive emergency.\n5. Paracetamol for fever; Diazepam 10 mg IV for seizures.\n6. Elevate head 30 degrees, lateral position.\n7. Aspirin 300 mg PO/PR ONLY if hemorrhagic stroke excluded.\n\nRefer immediately for CT scan.",
+    "urgent_referral_flags": "All suspected stroke -> Stabilize and transfer urgently to hospital with CT. Thrombolysis window is 4.5 hours.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch13-005",
+    "condition": "Acute Upper Gastrointestinal Bleeding",
+    "category": "Emergency Conditions (Chapter XIII)",
+    "keywords": ["upper gi bleeding", "hematemesis", "melena", "peptic ulcer", "varices", "omeprazole", "blood transfusion"],
+    "clinical_features": "Hematemesis (fresh blood or coffee-ground), melena, hypovolemia (tachycardia, hypotension, pallor, cold extremities, oliguria). Causes: peptic ulcer, esophageal varices, erosive gastritis.",
+    "moh_protocol": "1. Airway, lateral position to prevent aspiration.\n2. Two large-bore IVs; rapid NS/RL 1-2 L.\n3. Cross-match blood; transfuse if Hb <7 or hemodynamic instability.\n4. Oxygen, monitor vitals hourly, Foley for urine output.\n5. Pantoprazole 40 mg IV or Omeprazole 40 mg IV BID.\n6. Octreotide 50 mcg IV bolus then 50 mcg/hour if variceal bleed suspected.\n7. NPO until endoscopy.\n\nUrgent referral for endoscopy and definitive care.",
+    "urgent_referral_flags": "Massive hematemesis, hemodynamic instability, recurrent bleeding, or suspected variceal bleed -> Resuscitate and transfer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 220"
+  },
+  {
+    "id": "eth-ch14-001",
+    "condition": "Acute Post-Streptococcal Glomerulonephritis (APSGN)",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["apsgn", "glomerulonephritis", "post-streptococcal", "nephritic", "hematuria", "edema", "hypertension", "penicillin"],
+    "clinical_features": "Follows streptococcal throat/skin infection by 1-3 weeks. Hematuria (cola-colored urine), edema (periorbital/pedal), oliguria, hypertension, fatigue, mild fever.",
+    "moh_protocol": "GENERAL: Restrict salt, monitor fluids, bed rest.\n\nINFECTION ERADICATION:\n- Phenoxymethylpenicillin 250 mg PO QID x 10 days OR Benzathine Penicillin 1.2 million IU IM single dose (600,000 IU if <30 kg).\n- Penicillin allergy: Erythromycin 250 mg PO QID x 10 days.\n\nHYPERTENSION:\n- Hydralazine 0.25-1 mg/kg PO/IM q6-8h OR Nifedipine 0.25 mg/kg PO.\n\nEDEMA:\n- Furosemide 1-2 mg/kg PO/IV once daily (max 40 mg).",
+    "urgent_referral_flags": "Severe hypertension (encephalopathy, seizures), oligo-anuric renal failure, hyperkalemia, pulmonary edema, or cardiac failure -> Refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch14-002",
+    "condition": "Croup (Laryngotracheobronchitis)",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["croup", "laryngotracheobronchitis", "barking cough", "stridor", "nebulizer", "epinephrine", "dexamethasone"],
+    "clinical_features": "Children 6 months-3 years. Barking cough, inspiratory stridor, hoarse voice, low-grade fever, respiratory distress. Often worse at night. Paroxysmal cold symptoms.",
+    "moh_protocol": "MILD (stridor only with agitation, no respiratory distress):\n- Dexamethasone 0.6 mg/kg PO/IM (max 10 mg) single dose.\n- Supportive: cool-mist humidification, fluids, Paracetamol.\n\nMODERATE-SEVERE (stridor at rest, respiratory distress, retractions, cyanosis):\n- Dexamethasone 0.6 mg/kg PO/IM/IV (max 10 mg).\n- Nebulized Epinephrine 1:1000 (0.5 mL/kg, max 5 mL) via nebulizer, repeat q20min as needed.\n- Oxygen to maintain SpO2 >92%.\n\nAll moderate-severe cases require observation and referral.",
+    "urgent_referral_flags": "Severe respiratory distress, cyanosis, altered consciousness, or failure to improve after 4 hours -> Nebulize epinephrine, give Dexamethasone, and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch14-003",
+    "condition": "Neonatal Sepsis",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["neonatal sepsis", "sepsis", "newborn", "fever", "lethargy", "poor feeding", "ceftriaxone", "ampicillin", "gentamicin"],
+    "clinical_features": "Newborn <28 days. Fever or hypothermia, poor feeding, lethargy, irritability, respiratory distress, cyanosis, jaundice, hypotonia, convulsions, vomiting, diarrhea. May present with just one subtle sign.",
+    "moh_protocol": "ALL SUSPECTED NEONATAL SEPSIS NEEDS URGENT REFERRAL. Empiric pre-referral antibiotics:\n- Ampicillin 50 mg/kg IV/IM q12h PLUS Gentamicin 5 mg/kg IV/IM q24h.\n- Alternative: Ceftriaxone 50 mg/kg IV/IM q24h (avoid if hyperbilirubinemia <2 weeks).\n\nSUPPORTIVE: Keep warm, oxygen, IV fluids, glucose monitoring, breast milk feeding if tolerated.\n\nMATERNAL RISK FACTORS: PROM >18h, maternal fever, foul-smelling liquor.",
+    "urgent_referral_flags": "Any suspected neonatal sepsis -> Give first dose of antibiotics and transfer urgently to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch14-004",
+    "condition": "Foreign Body Aspiration",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["foreign body", "aspiration", "choking", "cough", "stridor", "bronchoscopy", "heimlich"],
+    "clinical_features": "Sudden onset choking, coughing, gagging, wheeze, stridor, dyspnea, unilateral decreased breath sounds. Often in children aged 1-3 years with history of eating/playing with small objects.",
+    "moh_protocol": "COMPLETE AIRWAY OBSTRUCTION (cannot speak/cry/breathe, cyanotic):\n- Infants <1 yr: 5 back blows then 5 chest thrusts.\n- Children >1 yr: 5 abdominal thrusts (Heimlich maneuver).\n- Repeat until object expelled or patient becomes unconscious; if unconscious, start CPR.\n\nPARTIAL OBSTRUCTION (able to breathe/cough):\n- Allow patient to cough spontaneously, do NOT perform blind finger sweep.\n- Oxygen, calm child, monitor closely.\n\nAll children with suspected aspiration require referral for bronchoscopy if object not expelled.",
+    "urgent_referral_flags": "Complete airway obstruction, persistent respiratory distress, or radiopaque object in airway -> Attempt removal and transfer immediately to facility with bronchoscopy.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch14-005",
+    "condition": "Rickets (Nutritional)",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["rickets", "vitamin d", "calcium", "bowlegs", "knock-knees", "wrist widening", "cholecalciferol"],
+    "clinical_features": "Children 6 months-3 years. Craniotabes, delayed fontanelle closure, rachitic rosary, Harrison's sulcus, wrist/ankle widening, bowing of legs (genu varum), knock-knees (genu valgum), delayed walking, irritability, growth failure.",
+    "moh_protocol": "TREATMENT:\n- Cholecalciferol (Vitamin D3) 2,000 IU PO daily x 6 weeks OR 50,000-60,000 IU single oral dose (stoss therapy) under supervision.\n- Calcium 500-1000 mg PO daily x 6 weeks.\n\nPREVENTION:\n- Vitamin A supplementation as per national schedule.\n- Adequate sunlight exposure, calcium-rich diet, continued breastfeeding.\n\nFOLLOW-UP: Monitor healing at wrists/knees after 6 weeks.",
+    "urgent_referral_flags": "Signs of severe hypocalcemia (tetany, carpopedal spasm, seizures), or failure to improve -> Refer for pediatric evaluation.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch14-006",
+    "condition": "Oral Thrush (Oral Candidiasis)",
+    "category": "Pediatric Disorders (Chapter XIV)",
+    "keywords": ["oral thrush", "candidiasis", "nystatin", "miconazole", "white patches", "mouth", "infant"],
+    "clinical_features": "White curd-like plaques on buccal mucosa, tongue, palate, or oropharynx that can be scraped off leaving an erythematous base. Refusal to feed, irritability, drooling. Common in infants, immunosuppressed, or after antibiotics.",
+    "moh_protocol": "INFANTS/CHILDREN:\n- Nystatin 100,000 units/mL suspension: 1-2 mL to each side of mouth QID for 7-14 days (after feeds).\n- Alternative: Miconazole 2% oral gel 2.5 mL applied to affected areas BID for 7-14 days.\n\nBREASTFEEDING MOTHERS: Treat nipple candidiasis with Miconazole cream BID.\n\nRECURRENT/PERSISTENT: Consider HIV testing and Cotrimoxazole prophylaxis.\n\nPREVENTION: Clean pacifiers/bottles; maintain oral hygiene.",
+    "urgent_referral_flags": "Oropharyngeal candidiasis with dysphagia, immunosuppression, or failure to improve after 14 days -> Refer for systemic antifungal therapy.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch15-002",
+    "condition": "Cellulitis",
+    "category": "Dermatological Disorders (Chapter XV)",
+    "keywords": ["cellulitis", "skin infection", "staphylococcus", "streptococcus", "cloxacillin", "amoxicillin", "clavulanate", "erythema"],
+    "clinical_features": "Acute spreading infection of dermis and subcutaneous tissue. Red, hot, swollen, tender skin with poorly demarcated borders, often on lower extremities. Fever, malaise, regional lymphadenopathy. May follow a break in skin.",
+    "moh_protocol": "MILD (no systemic signs):\n- Amoxicillin-Clavulanate 625 mg PO BID OR Cloxacillin 500 mg PO QID for 7-10 days.\n\nMODERATE-SEVERE (fever, rapidly spreading, facial/orbital, diabetes/immunocompromised):\n- Cloxacillin 2 g IV q6h OR Ceftriaxone 1-2 g IV daily.\n- Add Metronidazole 500 mg PO/IV BID if anaerobic/necrotizing suspected.\n\nSUPPORTIVE: Elevate limb, mark borders, warm compresses, analgesics.",
+    "urgent_referral_flags": "Cellulitis around eye/face, rapidly spreading, systemic toxicity, bullae, necrosis, or no improvement after 48h -> Start IV antibiotics and refer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 283"
+  },
+  {
+    "id": "eth-ch15-003",
+    "condition": "Erysipelas",
+    "category": "Dermatological Disorders (Chapter XV)",
+    "keywords": ["erysipelas", "superficial cellulitis", "group a strep", "cloxacillin", "penicillin", "well-demarcated", "fever"],
+    "clinical_features": "Acute, well-demarcated, raised, bright-red, tender plaque with sharp borders. Common on face (butterfly distribution) and lower legs. High fever, chills, malaise. More superficial than cellulitis.",
+    "moh_protocol": "FIRST-LINE:\n- Phenoxymethylpenicillin 500 mg PO QID for 7-10 days OR Benzathine Penicillin 1.2 million IU IM single dose.\n\nALTERNATIVE (Penicillin allergy or Staph suspected):\n- Cloxacillin 500 mg PO QID for 7-10 days OR Amoxicillin-Clavulanate 625 mg PO BID for 7-10 days.\n\nSEVERE (facial involvement, systemic toxicity):\n- Procaine Penicillin 400,000-800,000 IU IM daily OR Ceftriaxone 1 g IV daily until afebrile, then oral to complete 10 days.\n\nSUPPORTIVE: Elevate affected limb, Paracetamol.",
+    "urgent_referral_flags": "Facial/orbital erysipelas, high fever with systemic toxicity, or no response after 48h -> Start IV antibiotics and refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 284"
+  },
+  {
+    "id": "eth-ch15-004",
+    "condition": "Impetigo",
+    "category": "Dermatological Disorders (Chapter XV)",
+    "keywords": ["impetigo", "staphylococcus", "streptococcus", "honey-colored crusts", "cloxacillin", "mupirocin"],
+    "clinical_features": "Superficial bacterial skin infection with golden/honey-colored crusted lesions, often around mouth and nose. Non-bullous form: vesiculopustules that rupture and crust. Bullous form: larger flaccid bullae, caused by Staph aureus.",
+    "moh_protocol": "LOCALIZED (few lesions):\n- Mupirocin 2% ointment TID for 7 days.\n- Gentle washing with soap/water and remove crusts.\n\nEXTENSIVE OR SYSTEMIC SYMPTOMS:\n- Cloxacillin 250-500 mg PO QID for 7 days (Children 25-50 mg/kg/day in 4 doses).\n- Alternative: Amoxicillin-Clavulanate 25-45 mg/kg/day PO in 2 divided doses.\n\nPOST-STREPTOCOCCAL GLOMERULONEPHRITIS PROPHYLAXIS: Penicillin for contacts if outbreak.",
+    "urgent_referral_flags": "Fever, rapidly spreading lesions, bullous impetigo, or suspected glomerulonephritis 2-3 weeks later -> Oral antibiotics and refer for complications.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 286"
+  },
+  {
+    "id": "eth-ch15-005",
+    "condition": "Urticaria (Hives)",
+    "category": "Dermatological Disorders (Chapter XV)",
+    "keywords": ["urticaria", "hives", "allergic", "antihistamine", "chlorpheniramine", "cetirizine", "pruritus", "angioedema"],
+    "clinical_features": "Itchy, erythematous, raised wheals with central pallor and well-defined borders. Each lesion lasts <24 hours. May be associated with angioedema. Triggers: foods, drugs, infections, insect stings, physical factors.",
+    "moh_protocol": "FIRST-LINE:\n- Cetirizine 10 mg PO daily (Children 6-12 yrs: 5-10 mg; 2-6 yrs: 2.5-5 mg).\n- Alternative: Chlorpheniramine 4 mg PO TID (sedating).\n\nSEVERE/ANGIOEDEMA:\n- Add Prednisolone 30-40 mg PO daily for 5-7 days.\n- If anaphylaxis: Epinephrine 0.5 mg IM 1:1000, Hydrocortisone 200 mg IV, Chlorpheniramine 10 mg IV/IM.\n\nAVOID: Known trigger; stop offending drug.\nSUPPORTIVE: Calamine lotion, cool compresses.",
+    "urgent_referral_flags": "Angioedema involving airway, dysphagia, stridor, hypotension, or anaphylaxis -> Epinephrine IM immediately and transfer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 290"
+  },
+  {
+    "id": "eth-ch16-002",
+    "condition": "Genital Ulcer Disease (Syndromic Management)",
+    "category": "Sexually Transmitted Infections (Chapter XVI)",
+    "keywords": ["genital ulcer", "syphilis", "chancroid", "herpes", "doxycycline", "azithromycin", "benzathine penicillin", "acyclovir"],
+    "clinical_features": "Painful or painless genital ulcer(s), inguinal lymphadenopathy, dysuria, vaginal/urethral discharge. Causes: syphilis, chancroid, genital herpes, lymphogranuloma venereum, donovanosis.",
+    "moh_protocol": "SYNDROMIC TREATMENT (cover common causes):\n- Benzathine Penicillin 2.4 million IU IM single dose (1.2 million IU in each buttock) for syphilis.\n- PLUS Azithromycin 1 g PO single dose OR Erythromycin 500 mg PO QID x 7 days for chancroid/LGV.\n- PLUS Doxycycline 100 mg PO BID x 14 days (if LGV suspected; avoid in pregnancy).\n- PLUS Acyclovir 400 mg PO TID x 7-10 days if vesicular/herpetic lesions.\n\nPREGNANCY: Avoid Doxycycline; use Erythromycin.\n\nPARTNER MANAGEMENT: Treat partners; promote condom use; test for HIV/syphilis.",
+    "urgent_referral_flags": "Pregnancy with suspected syphilis, treatment failure, severe herpes with urinary retention, or signs of disseminated infection -> Refer to STI/HIV clinic.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 300"
+  },
+  {
+    "id": "eth-ch16-003",
+    "condition": "Pelvic Inflammatory Disease (PID)",
+    "category": "Sexually Transmitted Infections (Chapter XVI)",
+    "keywords": ["pid", "pelvic inflammatory disease", "cervicitis", "endometritis", "ceftriaxone", "doxycycline", "metronidazole"],
+    "clinical_features": "Lower abdominal/pelvic pain, fever, abnormal vaginal discharge, menorrhagia or intermenstrual bleeding, dyspareunia, cervical motion tenderness, adnexal tenderness. Caused by ascending infection from cervix (gonorrhea, chlamydia, anaerobes).",
+    "moh_protocol": "OUTPATIENT (MILD-MODERATE):\n- Ceftriaxone 250 mg IM single dose PLUS Doxycycline 100 mg PO BID for 14 days PLUS Metronidazole 400-500 mg PO BID for 14 days.\n\nINPATIENT (SEVERE, PREGNANCY, TUBO-OVARIAN ABSCESS):\n- Cefoxitin 2 g IV q6h OR Ceftriaxone 1-2 g IV daily PLUS Doxycycline 100 mg IV/PO BID PLUS Metronidazole 500 mg IV/PO BID.\n\nSUPPORTIVE: Analgesia, hydration, abstain from sex until treatment completed.\n\nALL PATIENTS: Test for HIV, syphilis, pregnancy.",
+    "urgent_referral_flags": "Severe illness with high fever, tubo-ovarian abscess, pregnancy, or no improvement after 72h -> Hospitalize for IV antibiotics and rule out surgical abdomen.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 302"
+  },
+  {
+    "id": "eth-ch17-002",
+    "condition": "Chemical Eye Burns",
+    "category": "Ophthalmological Disorders (Chapter XVII)",
+    "keywords": ["chemical eye burn", "corrosive", "eye injury", "irrigation", "tetracaine", "chloramphenicol"],
+    "clinical_features": "Sudden severe eye pain, redness, photophobia, blurred vision, tearing, blepharospasm after chemical exposure. Acid burns cause coagulative necrosis; alkali burns are more severe (liquefactive necrosis).",
+    "moh_protocol": "IMMEDIATE (TIME-CRITICAL):\n1. Copious irrigation with clean water or Normal Saline for at least 15-30 minutes; remove contact lenses.\n2. Use topical anesthetic (Tetracaine 0.5% drops) to aid irrigation.\n3. Evert eyelids and sweep fornices to remove particulate matter.\n\nAFTER IRRIGATION:\n- Chloramphenicol 0.5% eye drops QID.\n- Atropine 1% eye drops BID to prevent synechiae.\n- Tetanus prophylaxis.\n- Patch eye ONLY if small corneal abrasion; do NOT patch chemical burns.\n\nANALGESIA: Paracetamol.\n\nDo NOT attempt neutralization with another chemical.",
+    "urgent_referral_flags": "Any chemical eye burn, especially alkali (cement, ammonia, lye), severe pain, or vision loss -> Irrigate copiously and transfer urgently to ophthalmology.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 330"
+  },
+  {
+    "id": "eth-ch17-003",
+    "condition": "Acute Angle-Closure Glaucoma",
+    "category": "Ophthalmological Disorders (Chapter XVII)",
+    "keywords": ["glaucoma", "acute glaucoma", "angle closure", "acetazolamide", "pilocarpine", "timolol", "eye pain", "blurred vision"],
+    "clinical_features": "Sudden severe unilateral eye pain, blurred vision with halos around lights, headache, nausea/vomiting, markedly injected eye, steamy/cloudy cornea, fixed mid-dilated pupil, shallow anterior chamber. Tender, hard globe.",
+    "moh_protocol": "EMERGENCY PRE-REFERRAL TREATMENT:\n1. Acetazolamide 500 mg PO/IV stat, then 250 mg PO QID.\n2. Pilocarpine 2% eye drops 1 drop every 15 min for 2 doses, then 1 drop QID (constrict pupil).\n3. Timolol 0.5% eye drops 1 drop BID (reduce aqueous production).\n4. Mannitol 20% 1-2 g/kg IV if available.\n5. Anti-emetic: Metoclopramide 10 mg IM/IV.\n6. Keep patient semi-upright.\n\nUrgent ophthalmology referral for laser/surgical iridotomy.",
+    "urgent_referral_flags": "Suspected acute angle-closure glaucoma -> Start Acetazolamide + Pilocarpine + Timolol and transfer immediately to ophthalmologist (vision-threatening emergency).",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 334"
+  },
+  {
+    "id": "eth-ch18-002",
+    "condition": "Acute Rhinosinusitis",
+    "category": "Ear, Nose and Throat Disorders (Chapter XVIII)",
+    "keywords": ["rhinosinusitis", "sinusitis", "nasal congestion", "purulent discharge", "amoxicillin", "decongestant", "facial pain"],
+    "clinical_features": "Nasal congestion, purulent nasal discharge, facial pain/pressure (worse on bending forward), postnasal drip, cough, fever, hyposmia. Symptoms <4 weeks (acute).",
+    "moh_protocol": "MOST CASES VIRAL (symptomatic treatment):\n- Saline nasal irrigation, steam inhalation, rest, fluids.\n- Paracetamol for pain/fever.\n\nBACTERIAL (symptoms >10 days, severe fever, purulent discharge, facial pain):\n- Amoxicillin 500 mg PO TID for 5-7 days.\n- Alternative: Doxycycline 100 mg PO BID for 5-7 days OR Cotrimoxazole 800/160 mg PO BID for 7 days.\n\nDECONGESTANTS (short term only):\n- Pseudoephedrine 60 mg PO QID for max 5 days OR Oxymetazoline nasal spray BID for max 3 days.\n\nAvoid antibiotics in uncomplicated viral sinusitis.",
+    "urgent_referral_flags": "Orbital/periorbital swelling, visual changes, severe headache, high fever, or symptoms >12 weeks (chronic) -> Refer to ENT/specialist.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 348"
+  },
+  {
+    "id": "eth-ch18-003",
+    "condition": "Epistaxis (Nosebleed)",
+    "category": "Ear, Nose and Throat Disorders (Chapter XVIII)",
+    "keywords": ["epistaxis", "nosebleed", "nasal packing", "cauterization", "pressure", "silver nitrate"],
+    "clinical_features": "Bleeding from one or both nostrils. Anterior bleeds from Kiesselbach's plexus are common and usually minor. Posterior bleeds are heavier, often bilateral, more common in elderly/hypertensives.",
+    "moh_protocol": "FIRST AID:\n1. Sit patient upright, lean forward.\n2. Pinch the soft part of the nose (below bony bridge) continuously for 10-15 minutes.\n3. Apply cold compress/cotton pledget to nasal bridge.\n4. Spit out blood; do NOT swallow.\n\nPHARMACOLOGIC:\n- Topical vasoconstrictor: Naphazoline/Oxymetazoline or Phenylephrine nasal spray, then re-apply pressure.\n\nCAUTERY (if visible bleeding point):\n- Silver nitrate stick cauterization.\n\nPOSTERIOR/PERSISTENT:\n- Anterior nasal packing with ribbon gauze soaked in antibiotic ointment (e.g., Bismuth iodoform paraffin paste) or Nasal tampons.\n- Treat hypertension if present (Amlodipine/Nifedipine).",
+    "urgent_referral_flags": "Posterior epistaxis, bleeding not controlled after 20-30 min of pressure, hemodynamic instability, anticoagulant use, or suspected fracture/tumor -> Pack and refer to ENT urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 350"
+  },
+  {
+    "id": "eth-ch18-004",
+    "condition": "Tonsillitis & Pharyngitis",
+    "category": "Ear, Nose and Throat Disorders (Chapter XVIII)",
+    "keywords": ["tonsillitis", "pharyngitis", "sore throat", "strep", "penicillin", "amoxicillin", "fever", "exudate"],
+    "clinical_features": "Sore throat, painful swallowing (odynophagia), fever, tonsillar exudates, tender anterior cervical lymphadenopathy, halitosis. Viral causes common; Group A Strep causes pharyngitis with exudate, no cough, tender nodes.",
+    "moh_protocol": "VIRAL (majority):\n- Supportive: Paracetamol, warm saline gargles, fluids, rest.\n\nBACTERIAL (suspected Strep, Centor/McIsaac criteria, exudate, no cough):\n- First Line: Phenoxymethylpenicillin 500 mg PO QID for 10 days OR Benzathine Penicillin 1.2 million IU IM single dose.\n- Alternative: Amoxicillin 500 mg PO TID for 10 days OR Erythromycin 500 mg PO QID for 10 days.\n\nPERITONSILLAR ABSCESS SUSPECTED: Start broad-spectrum IV (Ceftriaxone 1 g + Metronidazole 500 mg IV) and refer.",
+    "urgent_referral_flags": "Peritonsillar/retropharyngeal abscess (unilateral severe throat pain, drooling, trismus, muffled voice), airway compromise, or dehydration -> Treat and refer urgently to ENT.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014), Page 352"
+  },
+  {
+    "id": "eth-ch18-005",
+    "condition": "Bell's Palsy (Acute Peripheral Facial Nerve Palsy)",
+    "category": "Ear, Nose and Throat Disorders (Chapter XVIII)",
+    "keywords": ["bells palsy", "facial nerve palsy", "facial weakness", "prednisolone", "aciclovir", "drooling"],
+    "clinical_features": "Acute unilateral facial weakness involving forehead (cannot wrinkle), inability to close eye, drooping mouth, drooling, loss of nasolabial fold, taste disturbance, hyperacusis. Must exclude stroke and ear infection.",
+    "moh_protocol": "START TREATMENT WITHIN 72 HOURS:\n1. Prednisolone 1 mg/kg/day (max 60-80 mg) PO daily for 7 days, then taper over next 7 days.\n2. Eye protection: Artificial tears/lubricating eye drops during day; eye ointment and tape/patch at night to prevent exposure keratitis.\n3. If suspected herpes zoster (vesicles in ear, Ramsay Hunt): add Acyclovir 800 mg PO 5x daily for 7 days.\n\nPHYSIOTHERAPY: Facial muscle exercises.\n\nAlways rule out stroke (upper face spared in central causes).",
+    "urgent_referral_flags": "Atypical features (bilateral, slowly progressive, no improvement, other cranial nerve deficits), or suspected Ramsay Hunt/zoster -> Refer to ENT/neurology.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-001",
+    "condition": "Hyperemesis Gravidarum",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["hyperemesis gravidarum", "nausea", "vomiting", "pregnancy", "dehydration", "promethazine", "ondansetron", "pyridoxine"],
+    "clinical_features": "Severe nausea and vomiting in pregnancy leading to weight loss (>5% pre-pregnancy weight), dehydration, electrolyte imbalance, ketonuria, and inability to tolerate oral intake. Usually begins around 4-8 weeks gestation.",
+    "moh_protocol": "MILD:\n- Pyridoxine (Vitamin B6) 25-50 mg PO TID.\n- Promethazine 12.5-25 mg PO/IM/PR q4-6h PRN.\n- Small frequent meals, avoid triggers, oral rehydration.\n\nMODERATE-SEVERE:\n- IV Normal Saline with dextrose and potassium replacement.\n- Promethazine 12.5-25 mg IM q4-6h.\n- Metoclopramide 10 mg IM/IV q8h.\n- Ondansetron 4-8 mg IV/IM q8h if available.\n- Thiamine 100 mg IV before dextrose-containing fluids.\n\nMonitor urine ketones, electrolytes, weight.",
+    "urgent_referral_flags": "Inability to keep fluids down >24h, signs of severe dehydration, confusion, jaundice, severe abdominal pain, hematemesis, or weight loss >5% -> Start IV fluids and refer to hospital.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-002",
+    "condition": "Premature Rupture of Membranes (PROM)",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["prom", "premature rupture of membranes", "amniotic fluid", "pregnancy", "erythromycin", "ampicillin", "preterm"],
+    "clinical_features": "Sudden gush or continuous leakage of clear or straw-colored fluid from vagina before onset of labor. Confirmed by pooling on speculum exam, positive nitrazine test, or fern pattern. Fetal heart monitoring may show tachycardia.",
+    "moh_protocol": "AT TERM (>=37 weeks):\n- If labor has not started within 24 hours, consider induction (refer to hospital).\n- If labor started: manage as labor; monitor for infection.\n\nPRETERM (<37 weeks):\n- Admit for observation if available; otherwise refer.\n- Erythromycin 250 mg PO QID for 10 days or Ampicillin 2 g IV q6h for 48h then oral to complete 5 days (prophylaxis against chorioamnionitis).\n- Corticosteroids for fetal lung maturity if 24-34 weeks and not in active labor (Dexamethasone 6 mg IM q12h x 4 doses).\n- Tocolysis if preterm labor and no contraindications (Nifedipine 20 mg PO, then 10-20 mg q6-8h).\n\nMonitor maternal temperature, fetal heart rate, WBC.",
+    "urgent_referral_flags": "Meconium-stained fluid, foul-smelling liquor, maternal fever, fetal tachycardia, preterm PROM <34 weeks, or active preterm labor -> Transfer immediately to hospital with obstetric care.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-003",
+    "condition": "Preterm Labor",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["preterm labor", "premature labor", "contractions", "tocolysis", "nifedipine", "betamethasone", "dexamethasone"],
+    "clinical_features": "Regular uterine contractions (>=4 in 20 min or >=8 in 60 min) before 37 weeks gestation, with cervical change (dilation/effacement), pelvic pressure, low back pain, vaginal discharge, or bleeding. Contractions may be painless initially.",
+    "moh_protocol": "CONFIRMED PRETERM LABOR (24-34 weeks, no contraindications):\n1. Corticosteroids for fetal lung maturity: Dexamethasone 6 mg IM q12h x 4 doses OR Betamethasone 12 mg IM, repeated after 24h.\n2. Tocolysis:\n- Nifedipine 20 mg PO loading, then 10-20 mg q6-8h (max 120 mg/day) for 48h.\n- Alternative if available: Salbutamol 0.25-0.5 mg SC q4-6h.\n3. Antibiotics for group B strep prophylaxis if preterm: Ampicillin 2 g IV then 1 g q4h OR Penicillin G 5 million IU IV then 2.5 million IU q4h.\n4. Refer to hospital for specialist obstetric management.\n\nCONTRAINDICATIONS TO TOCOLYSIS: Severe preeclampsia, active bleeding, chorioamnionitis, fetal distress, eclampsia.",
+    "urgent_referral_flags": "All preterm labor cases require urgent obstetric referral. Transfer immediately if gestation <34 weeks, ruptured membranes, bleeding, infection, or fetal compromise.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-004",
+    "condition": "Spontaneous / Septic Abortion",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["abortion", "spontaneous abortion", "septic abortion", "miscarriage", "misoprostol", "evacuation", "fever", "bleeding"],
+    "clinical_features": "Vaginal bleeding during pregnancy, lower abdominal cramping, passage of tissue per vagina.\n- Threatened: bleeding, closed os.\n- Inevitable: bleeding, open os.\n- Incomplete: partial products expelled, open os, ongoing bleeding.\n- Complete: all products passed, os closed.\n- Septic: fever, foul discharge, severe pain, shock.",
+    "moh_protocol": "THREATENED:\n- Bed rest, avoid intercourse; monitor.\n\nINCOMPLETE/INEVITABLE:\n- Misoprostol 400 mcg PO/SL/vaginally, repeat after 3 hours (up to 3 doses) to expel retained products.\n- If heavy bleeding or infection: refer for manual vacuum aspiration (MVA)/evacuation.\n\nSEPTIC ABORTION (EMERGENCY):\n- Start broad-spectrum antibiotics immediately: Ampicillin 2 g IV q6h PLUS Gentamicin 5 mg/kg IV/IM daily PLUS Metronidazole 500 mg IV q8h.\n- Urgent evacuation of uterus.\n- Resuscitate with IV fluids/blood if shock.\n\nRHESUS NEGATIVE: Give Anti-D immunoglobulin 50 mcg IM within 72 hours for first trimester, 300 mcg for >12 weeks.",
+    "urgent_referral_flags": "Septic abortion, heavy bleeding/hemorrhagic shock, suspected ectopic pregnancy, retained products with infection, or rhesus-negative mother -> Resuscitate and transfer urgently.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-005",
+    "condition": "Emergency Contraception",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["emergency contraception", "morning after pill", "levonorgestrel", "postcoital", "unprotected sex"],
+    "clinical_features": "Not a disease. Used after unprotected sexual intercourse or contraceptive failure when a woman does not wish to become pregnant. Effective when started as soon as possible (ideally within 72 hours, up to 120 hours).",
+    "moh_protocol": "HORMONAL (Levonorgestrel 1.5 mg PO):\n- 1.5 mg as a single dose, ideally within 72 hours of intercourse (effective up to 120 hours, decreasing with time).\n\nALTERNATIVE (if levonorgestrel not available):\n- Combined oral contraceptive pills containing ethinyl estradiol + levonorgestrel: 2 tabs now, then 2 tabs after 12 hours.\n\nCOPPER IUD:\n- Insertion within 5 days is the most effective non-hormonal option.\n\nFOLLOW-UP:\n- Counsel on regular contraception; perform pregnancy test if menses >1 week late.\n- Does NOT terminate an existing pregnancy.",
+    "urgent_referral_flags": "If pregnancy test is positive or patient has severe lower abdominal pain -> Rule out ectopic pregnancy and refer.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  },
+  {
+    "id": "eth-ch19-006",
+    "condition": "Puerperal Mastitis",
+    "category": "Gynecology and Obstetrics (Chapter XIX)",
+    "keywords": ["puerperal mastitis", "lactational mastitis", "breast infection", "cloxacillin", "fluctuation", "abscess"],
+    "clinical_features": "Postpartum lactating woman with unilateral breast pain, redness, warmth, swelling, fever, malaise, flu-like symptoms. Usually in 2-3 weeks postpartum. If untreated may progress to breast abscess (fluctuant mass).",
+    "moh_protocol": "BREAST ENGORGEMENT:\n- Continue breastfeeding/expressing, warm compresses before feeds, cold compresses after, proper latch, supportive bra.\n\nINFECTIOUS MASTITIS:\n- First Line: Cloxacillin 500 mg PO QID for 7-10 days OR Amoxicillin-Clavulanate 625 mg PO BID for 7-10 days.\n- Penicillin allergy: Erythromycin 500 mg PO QID for 7-10 days.\n- Continue breastfeeding/expressing to drain the affected breast.\n- Paracetamol/Ibuprofen for pain and fever.\n\nBREAST ABSCESS: Incision and drainage by trained provider. Continue antibiotics as above. Maintain lactation from unaffected side.",
+    "urgent_referral_flags": "Breast abscess (fluctuant mass), no improvement after 48h of antibiotics, high fever, or signs of sepsis -> Drain abscess and refer if not manageable at health center.",
+    "source": "FMHACA STG for Health Center, 3rd Ed (2014)"
+  }
+]
