@@ -35,7 +35,10 @@
       ],
       "expo-sqlite",
       "expo-web-browser",
-      "expo-speech-recognition"
+      "expo-speech-recognition",
+      "expo-image",
+      "expo-status-bar",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

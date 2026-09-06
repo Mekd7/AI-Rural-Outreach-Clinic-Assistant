@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
+import { Header, Palette } from '@/constants/palette';
 import {
   getPatients,
   getTriageCounts,
@@ -123,7 +124,7 @@ export default function ReportScreen() {
           <Text style={styles.headerDate}>{todayFormatted()}</Text>
         </View>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#0284c7" />
+          <ActivityIndicator size="large" color={Palette.burgundy} />
         </View>
       </SafeAreaView>
     );
@@ -283,21 +284,21 @@ function TriageBar({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: Palette.parchment,
   },
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 14,
     paddingBottom: 16,
     paddingHorizontal: 20,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 20,
     fontWeight: '700',
   },
   headerDate: {
-    color: 'rgba(255,255,255,0.8)',
+    color: Header.subtle,
     fontSize: 13,
     marginTop: 4,
   },
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 10,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.06,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
   kpiLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#475569',
+    color: Palette.muted,
     textAlign: 'center',
     marginTop: 4,
     lineHeight: 15,
@@ -348,14 +349,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 10,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -374,16 +375,16 @@ const styles = StyleSheet.create({
   triageBarLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
+    color: Palette.muted,
   },
   triageBarValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   triageBarBg: {
     height: 10,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: Palette.sand,
     borderRadius: 5,
     overflow: 'hidden',
   },
@@ -398,10 +399,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   demoCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 14,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -410,7 +411,7 @@ const styles = StyleSheet.create({
   demoCardTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 10,
   },
   demoItemRow: {
@@ -427,12 +428,12 @@ const styles = StyleSheet.create({
   demoItemText: {
     flex: 1,
     fontSize: 12,
-    color: '#475569',
+    color: Palette.muted,
   },
   demoItemValue: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   miniBarContainer: {
     flexDirection: 'row',
@@ -453,13 +454,13 @@ const styles = StyleSheet.create({
   },
   kebeleRowBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: Palette.line,
   },
   kebeleName: {
     flex: 1,
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
+    color: Palette.muted,
   },
   kebeleRight: {
     flex: 1.5,
@@ -470,45 +471,45 @@ const styles = StyleSheet.create({
   kebeleBarBg: {
     flex: 1,
     height: 8,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: Palette.sand,
     borderRadius: 4,
     overflow: 'hidden',
   },
   kebeleBarFill: {
     height: 8,
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.gold,
     borderRadius: 4,
   },
   kebeleCount: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     minWidth: 28,
     textAlign: 'right',
   },
 
   /* Export */
   exportButton: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 4,
-    shadowColor: '#0284c7',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
   exportButtonText: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 16,
     fontWeight: '700',
   },
 
   emptyText: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: Palette.faint,
     textAlign: 'center',
     paddingVertical: 12,
   },

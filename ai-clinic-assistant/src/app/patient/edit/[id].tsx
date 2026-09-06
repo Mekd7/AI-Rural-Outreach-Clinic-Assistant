@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Header, Palette } from '@/constants/palette';
 import { db } from '@/db/client';
 import type { Gender, Patient } from '@/types';
 import { calculateTriage } from '@/utils/triage';
@@ -182,7 +183,7 @@ export default function EditPatientScreen() {
               value={form.full_name}
               onChangeText={(value) => updateField('full_name', value)}
               placeholder="e.g. Tigest Haile"
-              placeholderTextColor="#6b7280"
+              placeholderTextColor={Palette.faint}
               autoCapitalize="words"
               autoCorrect={false}
             />
@@ -197,7 +198,7 @@ export default function EditPatientScreen() {
                 onChangeText={(value) => updateField('age', value.replace(/[^0-9]/g, ''))}
                 placeholder="e.g. 34"
                 keyboardType="number-pad"
-                placeholderTextColor="#6b7280"
+                placeholderTextColor={Palette.faint}
               />
             </View>
 
@@ -225,7 +226,7 @@ export default function EditPatientScreen() {
               value={form.kebele}
               onChangeText={(value) => updateField('kebele', value)}
               placeholder="Select Kebele..."
-              placeholderTextColor="#6b7280"
+              placeholderTextColor={Palette.faint}
             />
           </View>
 
@@ -256,7 +257,7 @@ export default function EditPatientScreen() {
                   onChangeText={(value) => updateField('systolic_bp', value.replace(/[^0-9]/g, ''))}
                   placeholder="120"
                   keyboardType="number-pad"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor={Palette.faint}
                 />
               </View>
 
@@ -268,7 +269,7 @@ export default function EditPatientScreen() {
                   onChangeText={(value) => updateField('diastolic_bp', value.replace(/[^0-9]/g, ''))}
                   placeholder="80"
                   keyboardType="number-pad"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor={Palette.faint}
                 />
               </View>
             </View>
@@ -282,7 +283,7 @@ export default function EditPatientScreen() {
                   onChangeText={(value) => updateField('heart_rate', value.replace(/[^0-9]/g, ''))}
                   placeholder="e.g. 78"
                   keyboardType="number-pad"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor={Palette.faint}
                 />
               </View>
 
@@ -294,7 +295,7 @@ export default function EditPatientScreen() {
                   onChangeText={(value) => updateField('temperature', value.replace(/[^0-9.]/g, ''))}
                   placeholder="e.g. 37.2"
                   keyboardType="decimal-pad"
-                  placeholderTextColor="#6b7280"
+                  placeholderTextColor={Palette.faint}
                 />
               </View>
             </View>
@@ -304,8 +305,8 @@ export default function EditPatientScreen() {
               <Switch
                 value={form.is_pregnant}
                 onValueChange={(value) => updateField('is_pregnant', value)}
-                trackColor={{ false: '#d1d5db', true: '#38bdf8' }}
-                thumbColor={form.is_pregnant ? '#ffffff' : '#f3f4f6'}
+                trackColor={{ false: Palette.line, true: Palette.burgundy }}
+                thumbColor={form.is_pregnant ? Palette.white : Palette.cream}
               />
             </View>
           </View>
@@ -322,7 +323,7 @@ export default function EditPatientScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   centered: {
     flex: 1,
@@ -331,10 +332,10 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#475569',
+    color: Palette.muted,
   },
   header: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Header.background,
     paddingTop: 18,
     paddingBottom: 16,
     paddingHorizontal: 16,
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backIcon: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 34,
     lineHeight: 34,
     fontWeight: '300',
@@ -359,12 +360,12 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 24,
     fontWeight: '700',
   },
   headerSubtitle: {
-    color: '#dcf3ff',
+    color: Header.subtle,
     fontSize: 14,
     marginTop: 2,
   },
@@ -374,13 +375,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   headerIcon: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 18,
     opacity: 0.9,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   formCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingTop: 16,
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   sectionLabel: {
-    color: '#0ea5e9',
+    color: Palette.burgundy,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1,
@@ -415,20 +416,20 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   label: {
-    color: '#374151',
+    color: Palette.inkSoft,
     fontSize: 14,
     marginBottom: 8,
     fontWeight: '600',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d9e2',
+    borderColor: Palette.line,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: '#fff',
+    backgroundColor: Palette.white,
     fontSize: 16,
-    color: '#111827',
+    color: Palette.ink,
   },
   twoColumnRow: {
     flexDirection: 'row',
@@ -441,28 +442,28 @@ const styles = StyleSheet.create({
   genderRow: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: '#d1d9e2',
+    borderColor: Palette.line,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.cream,
   },
   genderOption: {
     flex: 1,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.cream,
   },
   genderOptionSelected: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: Palette.burgundyLight,
   },
   genderText: {
-    color: '#374151',
+    color: Palette.inkSoft,
     fontSize: 16,
     fontWeight: '600',
   },
   genderTextSelected: {
-    color: '#0f172a',
+    color: Palette.ink,
   },
   triagePanel: {
     marginTop: 2,
@@ -490,12 +491,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   pregnancyLabel: {
-    color: '#374151',
+    color: Palette.inkSoft,
     fontSize: 16,
     fontWeight: '600',
   },
   submitButton: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.burgundy,
     borderRadius: 14,
     paddingVertical: 18,
     alignItems: 'center',
@@ -504,7 +505,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   submitButtonText: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',

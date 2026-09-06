@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
+import { Header, Palette } from '@/constants/palette';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
 import {
@@ -388,7 +389,7 @@ export default function ConsultationScreen() {
                 key={i}
                 style={[
                   styles.dot,
-                  isRecording && { backgroundColor: '#0ea5e9' },
+                  isRecording && { backgroundColor: Palette.burgundy },
                 ]}
               />
             ))}
@@ -407,8 +408,8 @@ export default function ConsultationScreen() {
         {/* Subjective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#dbeafe' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#1d4ed8' }]}>S</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.burgundyLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.burgundy }]}>S</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Subjective</Text>
@@ -420,7 +421,7 @@ export default function ConsultationScreen() {
             value={subjective}
             onChangeText={setSubjective}
             placeholder="Enter patient's reported symptoms…"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={Palette.faint}
             multiline
             textAlignVertical="top"
           />
@@ -429,8 +430,8 @@ export default function ConsultationScreen() {
         {/* Objective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#e0e7ff' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#4338ca' }]}>O</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.goldLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.earth }]}>O</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Objective</Text>
@@ -465,7 +466,7 @@ export default function ConsultationScreen() {
             value={objective}
             onChangeText={setObjective}
             placeholder="Additional physical exam findings…"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={Palette.faint}
             multiline
             textAlignVertical="top"
           />
@@ -474,8 +475,8 @@ export default function ConsultationScreen() {
         {/* Assessment & Plan */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#fef3c7' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#b45309' }]}>A</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.goldLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.earth }]}>A</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Assessment &amp; Plan</Text>
@@ -487,7 +488,7 @@ export default function ConsultationScreen() {
             value={assessmentPlan}
             onChangeText={setAssessmentPlan}
             placeholder="Enter diagnosis and management plan…"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={Palette.faint}
             multiline
             textAlignVertical="top"
           />
@@ -500,8 +501,8 @@ export default function ConsultationScreen() {
         {/* Prescriptions */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#dcfce7' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#047857' }]}>P</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.successLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.success }]}>P</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Prescriptions</Text>
@@ -513,7 +514,7 @@ export default function ConsultationScreen() {
             value={prescriptions}
             onChangeText={setPrescriptions}
             placeholder="Enter prescriptions…"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={Palette.faint}
             multiline
             textAlignVertical="top"
           />
@@ -544,14 +545,14 @@ export default function ConsultationScreen() {
               value={guidelineQuery}
               onChangeText={handleGuidelineQueryChange}
               placeholder="Type a condition e.g. Malaria, Pneumonia…"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={Palette.faint}
               onSubmitEditing={searchGuidelinesAI}
               returnKeyType="search"
               autoFocus
             />
             <Pressable style={styles.modalSearchButton} onPress={searchGuidelinesAI}>
               {guidelineLoading ? (
-                <ActivityIndicator color="#ffffff" />
+                <ActivityIndicator color={Header.text} />
               ) : (
                 <Text style={styles.modalSearchButtonText}>{localMatches.length > 0 ? 'AI' : 'Search'}</Text>
               )}
@@ -560,8 +561,8 @@ export default function ConsultationScreen() {
 
           {guidelineLoading && (
             <View style={styles.offlineBanner}>
-              <ActivityIndicator size="small" color="#0284c7" />
-              <Text style={[styles.offlineBannerText, { color: '#0284c7', marginLeft: 8 }]}>Searching AI guidelines…</Text>
+              <ActivityIndicator size="small" color={Palette.burgundy} />
+              <Text style={[styles.offlineBannerText, { color: Palette.burgundy, marginLeft: 8 }]}>Searching AI guidelines…</Text>
             </View>
           )}
 
@@ -669,7 +670,7 @@ export default function ConsultationScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   centered: {
     flex: 1,
@@ -679,27 +680,27 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#475569',
+    color: Palette.muted,
   },
   errorText: {
     fontSize: 16,
-    color: '#ef4444',
+    color: Palette.danger,
     marginBottom: 16,
   },
   backButtonAlt: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.burgundy,
     borderRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
   backButtonAltText: {
-    color: '#ffffff',
+    color: Header.text,
     fontWeight: '600',
   },
 
   // Header
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 12,
     paddingBottom: 14,
     paddingHorizontal: 16,
@@ -713,13 +714,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backIcon: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 32,
     lineHeight: 34,
     fontWeight: '300',
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 8,
@@ -730,7 +731,7 @@ const styles = StyleSheet.create({
 
   // Patient Card
   patientCard: {
-    backgroundColor: '#0369a1',
+    backgroundColor: Palette.burgundyDark,
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 16,
@@ -742,13 +743,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#ef4444',
+    color: Palette.burgundy,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -762,12 +763,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   patientName: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 17,
     fontWeight: '700',
   },
   patientMeta: {
-    color: '#bae6fd',
+    color: Header.subtle,
     fontSize: 13,
   },
 
@@ -782,7 +783,7 @@ const styles = StyleSheet.create({
 
   // SOAP Card
   soapCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderRadius: 16,
     padding: 18,
     shadowColor: '#000',
@@ -811,27 +812,27 @@ const styles = StyleSheet.create({
   soapTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   soapSubtitle: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
     marginTop: 1,
   },
   soapInput: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.cream,
     borderRadius: 12,
     padding: 14,
     fontSize: 15,
-    color: '#1e293b',
+    color: Palette.ink,
     minHeight: 100,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: Palette.line,
   },
 
   // Dictation
   sectionHeaderLabel: {
-    color: '#0284c7',
+    color: Palette.burgundy,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1.2,
@@ -849,22 +850,22 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#cbd5e1',
+    backgroundColor: Palette.line,
   },
   micButton: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#e0f2fe',
+    backgroundColor: Palette.burgundyLight,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
     borderWidth: 3,
-    borderColor: '#0ea5e9',
+    borderColor: Palette.burgundy,
   },
   micButtonActive: {
-    backgroundColor: '#0ea5e9',
-    borderColor: '#0369a1',
+    backgroundColor: Palette.burgundy,
+    borderColor: Palette.burgundyDark,
   },
   micIcon: {
     fontSize: 32,
@@ -873,7 +874,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     fontSize: 14,
-    color: '#475569',
+    color: Palette.muted,
     fontWeight: '500',
   },
 
@@ -886,20 +887,20 @@ const styles = StyleSheet.create({
   },
   vitalItem: {
     width: '47%',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: Palette.cream,
     borderRadius: 12,
     padding: 12,
   },
   vitalLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '500',
     marginBottom: 4,
   },
   vitalValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
 
   // AI Button
@@ -910,11 +911,11 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 14,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: Palette.line,
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.cream,
   },
   aiButtonIcon: {
     fontSize: 16,
@@ -922,7 +923,7 @@ const styles = StyleSheet.create({
   aiButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#334155',
+    color: Palette.inkSoft,
   },
 
   // Bottom Actions
@@ -930,28 +931,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     gap: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: Palette.line,
   },
   referralButton: {
     flex: 1,
     borderWidth: 2,
-    borderColor: '#0ea5e9',
+    borderColor: Palette.burgundy,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   referralButtonText: {
-    color: '#0284c7',
+    color: Palette.burgundy,
     fontSize: 14,
     fontWeight: '700',
     textAlign: 'center',
   },
   completeButton: {
     flex: 1,
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.burgundy,
     borderRadius: 14,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -960,12 +961,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   completeCheckmark: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 18,
     fontWeight: '700',
   },
   completeButtonText: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 14,
     fontWeight: '700',
     textAlign: 'center',
@@ -974,14 +975,14 @@ const styles = StyleSheet.create({
   // Guideline Modal
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
   },
   modalCloseButton: {
     width: 36,
@@ -990,12 +991,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalCloseIcon: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 22,
     fontWeight: '600',
   },
   modalTitle: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -1007,41 +1008,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: Palette.line,
   },
   modalSearchInput: {
     flex: 1,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: Palette.cream,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#0f172a',
+    color: Palette.ink,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: Palette.line,
   },
   modalSearchButton: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
   modalSearchButtonText: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 14,
     fontWeight: '600',
   },
   offlineBanner: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: Palette.dangerLight,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#fecaca',
+    borderBottomColor: Palette.dangerLight,
   },
   offlineBannerText: {
-    color: '#991b1b',
+    color: Palette.danger,
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
@@ -1053,7 +1054,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   modalResultCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderRadius: 14,
     padding: 16,
     marginBottom: 16,
@@ -1066,7 +1067,7 @@ const styles = StyleSheet.create({
   modalResultLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0ea5e9',
+    color: Palette.burgundy,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 10,
@@ -1074,18 +1075,18 @@ const styles = StyleSheet.create({
   modalBullet: {
     fontSize: 14,
     lineHeight: 22,
-    color: '#334155',
+    color: Palette.inkSoft,
     marginBottom: 8,
   },
   modalInsertButton: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.burgundy,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 4,
   },
   modalInsertButtonText: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 15,
     fontWeight: '700',
   },
@@ -1096,31 +1097,31 @@ const styles = StyleSheet.create({
   localMatchesTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 6,
   },
   mohBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#dcfce7',
+    backgroundColor: Palette.successLight,
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: '#86efac',
+    borderColor: Palette.success,
   },
   mohBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#166534',
+    color: Palette.success,
     letterSpacing: 0.3,
   },
   localMatchCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderRadius: 14,
     padding: 16,
     marginBottom: 14,
     borderLeftWidth: 4,
-    borderLeftColor: '#16a34a',
+    borderLeftColor: Palette.success,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 6,
@@ -1130,12 +1131,12 @@ const styles = StyleSheet.create({
   localMatchCondition: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 2,
   },
   localMatchCategory: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
     marginBottom: 8,
   },
   localMatchSourceRow: {
@@ -1143,33 +1144,33 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   mohBadgeSmall: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: Palette.successLight,
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderWidth: 1,
-    borderColor: '#bbf7d0',
+    borderColor: Palette.success,
   },
   mohBadgeSmallText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#15803d',
+    color: Palette.success,
   },
   clinicalFeaturesText: {
     fontSize: 13,
     lineHeight: 20,
-    color: '#475569',
-    backgroundColor: '#f8fafc',
+    color: Palette.muted,
+    backgroundColor: Palette.cream,
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: Palette.line,
   },
   localMatchSectionLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0284c7',
+    color: Palette.burgundy,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
@@ -1177,56 +1178,56 @@ const styles = StyleSheet.create({
   localMatchProtocolLine: {
     fontSize: 13,
     lineHeight: 20,
-    color: '#334155',
+    color: Palette.inkSoft,
     marginBottom: 2,
   },
   referralFlagBox: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: Palette.dangerLight,
     borderRadius: 8,
     padding: 10,
     marginTop: 10,
     borderWidth: 1,
-    borderColor: '#fecaca',
+    borderColor: Palette.dangerLight,
   },
   referralFlagTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#b91c1c',
+    color: Palette.danger,
     marginBottom: 4,
   },
   referralFlagText: {
     fontSize: 12,
     lineHeight: 18,
-    color: '#7f1d1d',
+    color: Palette.danger,
   },
   copyToPlanButton: {
-    backgroundColor: '#16a34a',
+    backgroundColor: Palette.success,
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
     marginTop: 12,
   },
   copyToPlanButtonText: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 14,
     fontWeight: '700',
   },
 
   modalErrorCard: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: Palette.dangerLight,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#fecaca',
+    borderColor: Palette.dangerLight,
   },
   modalErrorTitle: {
-    color: '#b91c1c',
+    color: Palette.danger,
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 6,
   },
   modalErrorText: {
-    color: '#7f1d1d',
+    color: Palette.danger,
     fontSize: 14,
     lineHeight: 20,
   },

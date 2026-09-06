@@ -2,11 +2,12 @@ import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
 
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
 import { TRIAGE_COLORS } from '@/constants/triage';
+import { Palette } from '@/constants/palette';
 
 interface ConsultationRow {
   id: string;
@@ -159,16 +160,16 @@ export default function ConsultScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 12,
     paddingBottom: 16,
     paddingHorizontal: 20,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 22,
     fontWeight: '700',
   },
@@ -185,12 +186,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 6,
   },
   emptyText: {
     fontSize: 14,
-    color: '#64748b',
+    color: Palette.muted,
     textAlign: 'center',
   },
   list: {
@@ -198,10 +199,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     flex: 1,
   },
   badge: {
@@ -231,12 +232,12 @@ const styles = StyleSheet.create({
   },
   notes: {
     fontSize: 14,
-    color: '#475569',
+    color: Palette.muted,
     marginBottom: 6,
   },
   date: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: Palette.faint,
   },
   kebab: {
     position: 'absolute',
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   },
   kebabIcon: {
     fontSize: 20,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '700',
   },
 });
