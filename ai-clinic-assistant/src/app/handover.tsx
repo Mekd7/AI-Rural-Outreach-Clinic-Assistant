@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
+import { Header, Palette } from '@/constants/palette';
 import { db } from '@/db/client';
 import type { Consultation, Patient } from '@/types';
 
@@ -377,7 +378,7 @@ export default function HandoverScreen() {
           <Text style={styles.instructionsTitle}>HEW Actions Required</Text>
           {item.hewInstructions.map((inst, i) => (
             <View key={i} style={styles.instructionRow}>
-              <View style={[styles.instructionDot, { backgroundColor: item.isUrgentReferral ? '#ef4444' : '#0284c7' }]} />
+              <View style={[styles.instructionDot, { backgroundColor: item.isUrgentReferral ? Palette.danger : Palette.burgundy }]} />
               <Text style={styles.instructionText}>{inst}</Text>
             </View>
           ))}
@@ -422,7 +423,7 @@ export default function HandoverScreen() {
             {/* Prescribed medications */}
             {item.prescriptionsList.length > 0 && (
               <View style={styles.detailBlock}>
-                <Text style={[styles.detailBlockTitle, { color: '#047857' }]}>Prescribed Medications</Text>
+                <Text style={[styles.detailBlockTitle, { color: Palette.success }]}>Prescribed Medications</Text>
                 {item.prescriptionsList.map((rx, i) => (
                   <View key={i} style={styles.rxPill}>
                     <Text style={styles.rxPillText}>{rx}</Text>
@@ -441,7 +442,7 @@ export default function HandoverScreen() {
             {/* No consultation recorded */}
             {!c && (
               <View style={styles.detailBlock}>
-                <Text style={[styles.detailBlockText, { color: '#94a3b8', fontStyle: 'italic' }]}>
+                <Text style={[styles.detailBlockText, { color: Palette.faint, fontStyle: 'italic' }]}>
                   No consultation recorded for this patient.
                 </Text>
               </View>
@@ -546,9 +547,9 @@ export default function HandoverScreen() {
 
       {/* Metric Cards */}
       <View style={styles.metricsRow}>
-        {renderMetricCard('Total Patients\nSeen', metrics.total, '#0284c7', '#dbeafe')}
-        {renderMetricCard('Urgent\nReferrals', metrics.urgent, '#dc2626', '#fee2e2')}
-        {renderMetricCard('Follow-ups\nRequired', metrics.followUps, '#d97706', '#fef3c7')}
+        {renderMetricCard('Total Patients\nSeen', metrics.total, Palette.burgundy, Palette.burgundyLight)}
+        {renderMetricCard('Urgent\nReferrals', metrics.urgent, Palette.danger, Palette.dangerLight)}
+        {renderMetricCard('Follow-ups\nRequired', metrics.followUps, Palette.gold, Palette.goldLight)}
       </View>
 
       {/* Filter Tabs */}
@@ -607,7 +608,7 @@ export default function HandoverScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
 
   // Date list
@@ -615,14 +616,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   dateCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 16,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -630,7 +631,7 @@ const styles = StyleSheet.create({
   },
   dateCardToday: {
     borderWidth: 2,
-    borderColor: '#0284c7',
+    borderColor: Palette.burgundy,
   },
   dateCardLeft: {
     flex: 1,
@@ -639,17 +640,17 @@ const styles = StyleSheet.create({
   dateCardLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   dateCardLabelToday: {
-    color: '#0284c7',
+    color: Palette.burgundy,
   },
   todayBadge: {
     marginTop: 4,
     fontSize: 11,
     fontWeight: '700',
-    color: '#ffffff',
-    backgroundColor: '#0284c7',
+    color: Palette.cream,
+    backgroundColor: Palette.burgundy,
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -663,43 +664,43 @@ const styles = StyleSheet.create({
   },
   dateCardStat: {
     alignItems: 'center',
-    backgroundColor: '#f0f4f8',
+    backgroundColor: Palette.sand,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   dateCardStatUrgent: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: Palette.dangerLight,
   },
   dateCardStatValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0284c7',
+    color: Palette.burgundy,
   },
   dateCardStatLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#64748b',
+    color: Palette.muted,
   },
   dateCardStatValueUrgent: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#dc2626',
+    color: Palette.danger,
   },
   dateCardStatLabelUrgent: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#dc2626',
+    color: Palette.danger,
   },
   dateCardChevron: {
     fontSize: 24,
-    color: '#94a3b8',
+    color: Palette.faint,
     fontWeight: '300',
   },
 
   // Header
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 12,
     paddingBottom: 14,
     paddingHorizontal: 16,
@@ -713,7 +714,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backIcon: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 32,
     lineHeight: 34,
     fontWeight: '300',
@@ -723,12 +724,12 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 18,
     fontWeight: '700',
   },
   headerDate: {
-    color: '#bae6fd',
+    color: Header.subtle,
     fontSize: 12,
     marginTop: 2,
   },
@@ -742,11 +743,11 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 14,
     borderLeftWidth: 4,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -758,7 +759,7 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontSize: 11,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '600',
     marginTop: 4,
     lineHeight: 15,
@@ -778,20 +779,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    borderColor: Palette.line,
+    backgroundColor: Palette.cream,
   },
   filterTabActive: {
-    backgroundColor: '#0284c7',
-    borderColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
+    borderColor: Palette.burgundy,
   },
   filterTabText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#475569',
+    color: Palette.muted,
   },
   filterTabTextActive: {
-    color: '#ffffff',
+    color: Palette.cream,
   },
 
   // List
@@ -810,28 +811,28 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 15,
-    color: '#475569',
+    color: Palette.muted,
   },
   emptyTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#475569',
+    color: Palette.muted,
     textAlign: 'center',
     marginBottom: 6,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: Palette.faint,
     textAlign: 'center',
   },
 
   // Action Card
   actionCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
@@ -839,7 +840,7 @@ const styles = StyleSheet.create({
   },
   actionCardUrgent: {
     borderLeftWidth: 4,
-    borderLeftColor: '#ef4444',
+    borderLeftColor: Palette.danger,
   },
   actionCardHeader: {
     flexDirection: 'row',
@@ -850,13 +851,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#e0f2fe',
+    backgroundColor: Palette.goldLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   actionCardAvatarText: {
-    color: '#0284c7',
+    color: Palette.burgundy,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -872,20 +873,20 @@ const styles = StyleSheet.create({
   actionCardName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   actionCardMeta: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
   },
   expandChevron: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: Palette.faint,
     marginLeft: 8,
   },
   tapHint: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: Palette.faint,
     textAlign: 'center',
     marginTop: 8,
   },
@@ -895,7 +896,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: Palette.line,
   },
   detailBlock: {
     marginBottom: 12,
@@ -903,7 +904,7 @@ const styles = StyleSheet.create({
   detailBlockTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#475569',
+    color: Palette.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
     marginBottom: 4,
@@ -911,12 +912,12 @@ const styles = StyleSheet.create({
   detailBlockText: {
     fontSize: 13,
     lineHeight: 20,
-    color: '#334155',
+    color: Palette.inkSoft,
   },
   referralBanner: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: Palette.dangerLight,
     borderWidth: 1,
-    borderColor: '#fecaca',
+    borderColor: Palette.danger,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -925,23 +926,23 @@ const styles = StyleSheet.create({
   referralBannerText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#dc2626',
+    color: Palette.danger,
     textAlign: 'center',
   },
 
   // Prescriptions
   rxPill: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: Palette.oliveLight,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginBottom: 4,
     borderWidth: 1,
-    borderColor: '#bbf7d0',
+    borderColor: Palette.olive,
   },
   rxPillText: {
     fontSize: 13,
-    color: '#166534',
+    color: Palette.success,
     fontWeight: '500',
   },
 
@@ -950,7 +951,7 @@ const styles = StyleSheet.create({
   instructionsTitle: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#0284c7',
+    color: Palette.burgundy,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
     marginBottom: 8,
@@ -971,24 +972,24 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     lineHeight: 19,
-    color: '#334155',
+    color: Palette.inkSoft,
   },
 
   // Bottom
   bottomActions: {
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: Palette.line,
   },
   exportButton: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
   },
   exportButtonText: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 16,
     fontWeight: '700',
   },

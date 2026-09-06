@@ -1,6 +1,5 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   Alert,
   Pressable,
@@ -17,6 +16,7 @@ import { db, getPatients } from '@/db/client';
 import type { Patient } from '@/types';
 import { TRIAGE_LEVELS, TRIAGE_FILTER_LABELS, TRIAGE_COLORS, type TriageLevel } from '@/constants/triage';
 import { PatientCard } from '@/components/PatientCard';
+import { Header, Palette } from '@/constants/palette';
 
 export default function HomeScreen() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -167,7 +167,7 @@ export default function HomeScreen() {
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search by name or kebele…"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={Palette.faint}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 autoCapitalize="none"
@@ -251,20 +251,20 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 14,
     paddingBottom: 12,
     paddingHorizontal: 16,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.12,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.15)',
+    borderBottomColor: 'rgba(255, 251, 244, 0.15)',
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -278,18 +278,18 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 22,
     fontWeight: '700',
   },
   statusBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: Header.chip,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   statusBadgeText: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.5,
@@ -297,53 +297,53 @@ const styles = StyleSheet.create({
   },
   handoverButton: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: Header.chip,
     borderRadius: 10,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: Header.chipBorder,
     alignItems: 'center',
   },
   handoverButtonText: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 13,
     fontWeight: '700',
   },
   newPatientButton: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',
   },
   newPatientButtonText: {
-    color: '#0284c7',
+    color: Palette.burgundy,
     fontSize: 13,
     fontWeight: '700',
   },
   searchContainer: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: Palette.line,
   },
   searchInput: {
-      backgroundColor: '#f8fafc',
+      backgroundColor: Palette.parchment,
       borderRadius: 12,
       paddingHorizontal: 16,
       paddingVertical: 12,
       fontSize: 16,
-      color: '#0f172a',
+      color: Palette.ink,
       borderWidth: 1,
-      borderColor: '#e2e8f0',
+      borderColor: Palette.line,
     },
     filterContainer: {
         paddingHorizontal: 16,
         paddingVertical: 12,
-        backgroundColor: '#ffffff',
+        backgroundColor: Palette.cream,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#e2e8f0',
+        borderBottomColor: Palette.line,
       },
       filterTabsWrapper: {
         flexDirection: 'row',
@@ -354,22 +354,22 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
-        backgroundColor: '#f8fafc',
+        borderColor: Palette.line,
+        backgroundColor: Palette.parchment,
         minWidth: 90,
         alignItems: 'center',
       },
       filterTabActive: {
-        backgroundColor: '#0284c7',
-        borderColor: '#0284c7',
+        backgroundColor: Palette.burgundy,
+        borderColor: Palette.burgundy,
       },
       filterTabText: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#475569',
+        color: Palette.muted,
       },
       filterTabTextActive: {
-        color: '#ffffff',
+        color: Palette.cream,
       },
     container: {
     flex: 1,
@@ -380,16 +380,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#475569',
+    color: Palette.muted,
     marginBottom: 24,
   },
   error: {
-    color: '#ef4444',
+    color: Palette.danger,
   },
   emptyState: {
     alignItems: 'center',
@@ -397,12 +397,12 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#475569',
+    color: Palette.muted,
     fontWeight: '600',
   },
   emptyStateSubtext: {
       fontSize: 14,
-      color: '#94a3b8',
+      color: Palette.faint,
     },
     loadingContainer: {
       flex: 1,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
       flex: 1,
-      backgroundColor: '#ebf3f7',
+      backgroundColor: Palette.parchment,
     },
     listContent: {
       paddingHorizontal: 16,
@@ -420,13 +420,13 @@ const styles = StyleSheet.create({
       paddingBottom: 24,
     },
     ctaButton: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.teal,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 28,
   },
   ctaText: {
-    color: '#ffffff',
+    color: Palette.cream,
     fontSize: 18,
     fontWeight: '700',
   },

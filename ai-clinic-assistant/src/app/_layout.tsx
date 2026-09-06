@@ -1,12 +1,10 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, useColorScheme } from 'react-native';
+import { Alert } from 'react-native';
 
 import { initDatabase } from '@/db/client';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [dbReady, setDbReady] = useState(false);
 
   useEffect(() => {
@@ -25,23 +23,17 @@ export default function RootLayout() {
   }, []);
 
   if (!dbReady) {
-    return (
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <></>
-      </ThemeProvider>
-    );
+    return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="consultation/[id]" />
-        <Stack.Screen name="consultation/view/[id]" />
-        <Stack.Screen name="consultation/edit/[id]" />
-        <Stack.Screen name="patient/edit/[id]" />
-        <Stack.Screen name="handover" />
-      </Stack>
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="consultation/[id]" />
+      <Stack.Screen name="consultation/view/[id]" />
+      <Stack.Screen name="consultation/edit/[id]" />
+      <Stack.Screen name="patient/edit/[id]" />
+      <Stack.Screen name="handover" />
+    </Stack>
   );
 }

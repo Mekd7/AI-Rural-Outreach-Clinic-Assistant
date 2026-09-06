@@ -2,6 +2,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Patient } from '@/types';
 import { TriageBadge } from './TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
+import { Palette } from '@/constants/palette';
 
 interface PatientCardProps {
   patient: Patient;
@@ -72,21 +73,21 @@ export function PatientCard({ patient, onPress, onEdit, onDelete }: PatientCardP
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.cream,
     borderRadius: 14,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: Palette.ink,
     shadowOpacity: 0.06,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#e2e8f0',
+    borderColor: Palette.line,
   },
   cardPressed: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: Palette.parchment,
   },
   cardHeader: {
     flexDirection: 'column',
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   patientName: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     flex: 1,
   },
   metaRow: {
@@ -111,12 +112,12 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 13,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '500',
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: Palette.line,
     marginVertical: 10,
   },
   vitalsRow: {
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   vitalsLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: Palette.faint,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
   },
   kebabIcon: {
     fontSize: 20,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '700',
   },
 });

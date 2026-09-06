@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TriageBadge } from '@/components/TriageBadge';
 import { TRIAGE_COLORS } from '@/constants/triage';
+import { Header, Palette } from '@/constants/palette';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
 
@@ -208,8 +209,8 @@ export default function ConsultationViewScreen() {
         {/* Subjective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#dbeafe' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#1d4ed8' }]}>S</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.burgundyLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.burgundy }]}>S</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Subjective</Text>
@@ -224,8 +225,8 @@ export default function ConsultationViewScreen() {
         {/* Objective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#e0e7ff' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#4338ca' }]}>O</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.goldLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.earth }]}>O</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Objective</Text>
@@ -240,8 +241,8 @@ export default function ConsultationViewScreen() {
         {/* Assessment & Plan */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#fef3c7' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#b45309' }]}>A</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.goldLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.earth }]}>A</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Assessment &amp; Plan</Text>
@@ -256,8 +257,8 @@ export default function ConsultationViewScreen() {
         {/* Prescriptions */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
-            <View style={[styles.soapBadge, { backgroundColor: '#dcfce7' }]}>
-              <Text style={[styles.soapBadgeText, { color: '#047857' }]}>P</Text>
+            <View style={[styles.soapBadge, { backgroundColor: Palette.successLight }]}>
+              <Text style={[styles.soapBadgeText, { color: Palette.success }]}>P</Text>
             </View>
             <View>
               <Text style={styles.soapTitle}>Prescriptions</Text>
@@ -292,7 +293,7 @@ export default function ConsultationViewScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ebf3f7',
+    backgroundColor: Palette.parchment,
   },
   centered: {
     flex: 1,
@@ -302,26 +303,26 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#475569',
+    color: Palette.muted,
   },
   errorText: {
     fontSize: 16,
-    color: '#ef4444',
+    color: Palette.danger,
     marginBottom: 16,
   },
   backButtonAlt: {
-    backgroundColor: '#0ea5e9',
+    backgroundColor: Palette.burgundy,
     borderRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
   backButtonAltText: {
-    color: '#ffffff',
+    color: Header.text,
     fontWeight: '600',
   },
 
   header: {
-    backgroundColor: '#0284c7',
+    backgroundColor: Palette.burgundy,
     paddingTop: 12,
     paddingBottom: 14,
     paddingHorizontal: 16,
@@ -335,13 +336,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backIcon: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 32,
     lineHeight: 34,
     fontWeight: '300',
   },
   headerTitle: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 8,
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
   },
 
   patientCard: {
-    backgroundColor: '#0369a1',
+    backgroundColor: Palette.burgundyDark,
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 16,
@@ -363,13 +364,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   avatarText: {
-    color: '#ef4444',
+    color: Palette.burgundy,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -383,16 +384,16 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   patientName: {
-    color: '#ffffff',
+    color: Header.text,
     fontSize: 17,
     fontWeight: '700',
   },
   patientMeta: {
-    color: '#bae6fd',
+    color: Header.subtle,
     fontSize: 13,
   },
   recordDate: {
-    color: '#7dd3fc',
+    color: Header.subtle,
     fontSize: 11,
     marginTop: 4,
   },
@@ -406,7 +407,7 @@ const styles = StyleSheet.create({
   },
 
   soapCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Palette.white,
     borderRadius: 16,
     padding: 18,
     shadowColor: '#000',
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
     marginBottom: 12,
   },
   soapHeader: {
@@ -441,16 +442,16 @@ const styles = StyleSheet.create({
   soapTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   soapSubtitle: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
     marginTop: 1,
   },
   notesText: {
     fontSize: 15,
-    color: '#1e293b',
+    color: Palette.ink,
     lineHeight: 22,
   },
 
@@ -461,20 +462,20 @@ const styles = StyleSheet.create({
   },
   vitalItem: {
     width: '47%',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: Palette.cream,
     borderRadius: 12,
     padding: 12,
   },
   vitalLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: Palette.muted,
     fontWeight: '500',
     marginBottom: 4,
   },
   vitalValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
   actions: {
     flexDirection: 'row',
@@ -488,15 +489,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   editButton: {
-    backgroundColor: '#e0f2fe',
+    backgroundColor: Palette.burgundyLight,
   },
   deleteButton: {
-    backgroundColor: '#fee2e2',
+    backgroundColor: Palette.dangerLight,
   },
   actionText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0f172a',
+    color: Palette.ink,
   },
-
 });
