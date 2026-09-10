@@ -199,6 +199,10 @@ export default function HomeScreen() {
             style={styles.newPatientButton}
             onPress={() => router.push('/(tabs)/register' as any)}
           >
+          <Pressable style={styles.handoverButton} onPress={() => router.push('/handover' as any)}>
+            <Text style={styles.handoverButtonText}>HEW Handover</Text>
+          </Pressable>
+          <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
             <Text style={styles.newPatientButtonText}>+ New Patient</Text>
           </Pressable>
         </View>
