@@ -11,8 +11,8 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { db, getPatients } from '@/db/client';
+import { syncUnsyncedPatients } from '@/services/supabase';
 import type { Patient } from '@/types';
 import { TRIAGE_LEVELS, TRIAGE_FILTER_LABELS, TRIAGE_COLORS, type TriageLevel } from '@/constants/triage';
 import { PatientCard } from '@/components/PatientCard';
@@ -61,6 +61,30 @@ export default function HomeScreen() {
         }
       }
     }, []);
+
+    const handleSync = useCallback(async () => {
+  try {
+    setIsLoading(true);
+
+    await syncUnsyncedPatients();
+
+    // Reload patients after sync
+    await loadPatients();
+
+    Alert.alert('Sync Complete', 'Patient data has been synchronized.');
+  } catch (err) {
+    console.error('Sync failed:', err);
+
+    const message =
+      err instanceof Error ? err.message : 'Failed to synchronize data.';
+
+    Alert.alert('Sync Failed', message);
+  } finally {
+    if (isMounted.current) {
+      setIsLoading(false);
+    }
+  }
+}, [loadPatients]);
 
   useEffect(() => {
     loadPatients();
@@ -154,10 +178,27 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.headerBottomRow}>
-          <Pressable style={styles.handoverButton} onPress={() => router.push('/handover' as any)}>
+          <Pressable
+            style={styles.handoverButton}
+            onPress={() => router.push('/handover' as any)}
+          >
             <Text style={styles.handoverButtonText}>HEW Handover</Text>
           </Pressable>
-          <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
+
+          <Pressable
+            style={styles.syncButton}
+            onPress={handleSync}
+            disabled={isLoading}
+          >
+            <Text style={styles.syncButtonText}>
+              {isLoading ? 'Syncing...' : 'Sync Now'}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.newPatientButton}
+            onPress={() => router.push('/(tabs)/register' as any)}
+          >
             <Text style={styles.newPatientButtonText}>+ New Patient</Text>
           </Pressable>
         </View>
@@ -304,6 +345,21 @@ const styles = StyleSheet.create({
     borderColor: Header.chipBorder,
     alignItems: 'center',
   },
+  syncButton: {
+    flex: 1,
+    backgroundColor: Header.chip,
+    borderRadius: 10,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: Header.chipBorder,
+    alignItems: 'center',
+  },
+
+syncButtonText: {
+  color: Palette.cream,
+  fontSize: 13,
+  fontWeight: '700',
+},
   handoverButtonText: {
     color: Palette.cream,
     fontSize: 13,
