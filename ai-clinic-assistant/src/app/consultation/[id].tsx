@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Modal,
   Pressable,
@@ -19,20 +18,9 @@ import { Header, Palette } from '@/constants/palette';
 import { db } from '@/db/client';
 import type { Patient } from '@/types';
 import {
-  queryEthiopianGuidelines,
   searchEthiopianGuidelines,
-  type AIQueryResult,
   type LocalGuidelineMatch,
 } from '@/services/ai';
-
-// expo-speech-recognition requires a custom dev build (native module).
-// Load it dynamically so the screen still works in Expo Go without it.
-let SpeechModule: any = null;
-try {
-  SpeechModule = require('expo-speech-recognition').ExpoSpeechRecognitionModule;
-} catch {
-  // Native module unavailable (Expo Go) — dictation will be disabled.
-}
 
 export default function ConsultationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,16 +33,11 @@ export default function ConsultationScreen() {
   const [assessmentPlan, setAssessmentPlan] = useState('');
   const [prescriptions, setPrescriptions] = useState('');
 
-  // Voice dictation state
-  const [isRecording, setIsRecording] = useState(false);
-  const [activeField, setActiveField] = useState<'subjective' | null>('subjective');
   const isMounted = useRef(true);
 
   // Guideline search modal state
   const [guidelineModalVisible, setGuidelineModalVisible] = useState(false);
   const [guidelineQuery, setGuidelineQuery] = useState('');
-  const [guidelineLoading, setGuidelineLoading] = useState(false);
-  const [guidelineResult, setGuidelineResult] = useState<AIQueryResult | null>(null);
   const [localMatches, setLocalMatches] = useState<LocalGuidelineMatch[]>([]);
 
   useEffect(() => {
@@ -88,108 +71,15 @@ export default function ConsultationScreen() {
     })();
   }, [id]);
 
-  // Speech recognition via dynamic module (only available in dev builds)
-  useEffect(() => {
-    if (!SpeechModule) return;
-    const { addSpeechRecognitionListener } = require('expo-speech-recognition');
-
-    const resultSub = addSpeechRecognitionListener?.('result', (event: any) => {
-      if (activeField === 'subjective' && event.results?.[0]?.transcript) {
-        const transcript = event.results[0].transcript;
-        if (event.isFinal) {
-          setSubjective((prev) => prev + (prev ? ' ' : '') + transcript);
-        }
-      }
-    });
-
-    const endSub = addSpeechRecognitionListener?.('end', () => {
-      setIsRecording(false);
-    });
-
-    const errorSub = addSpeechRecognitionListener?.('error', (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      setIsRecording(false);
-    });
-
-    return () => {
-      resultSub?.remove?.();
-      endSub?.remove?.();
-      errorSub?.remove?.();
-    };
-  }, [activeField]);
-
-  const startDictation = async () => {
-    if (!SpeechModule) {
-      Alert.alert(
-        'Not available',
-        'Voice dictation requires a custom development build. It is not supported in Expo Go.',
-      );
-      return;
-    }
-    const result = await SpeechModule.requestPermissionsAsync();
-    if (!result.granted) {
-      Alert.alert('Permission required', 'Microphone permission is needed for voice dictation.');
-      return;
-    }
-    setIsRecording(true);
-    SpeechModule.start({
-      lang: 'en-US',
-      interimResults: true,
-      continuous: true,
-    });
-  };
-
-  const stopDictation = () => {
-    SpeechModule?.stop();
-    setIsRecording(false);
-  };
-
   // Live local search triggered on every keystroke
   const handleGuidelineQueryChange = (text: string) => {
     setGuidelineQuery(text);
     if (!text.trim()) {
       setLocalMatches([]);
-      setGuidelineResult(null);
       return;
     }
     const matches = searchEthiopianGuidelines(text);
     setLocalMatches(matches);
-    setGuidelineResult(null);
-  };
-
-  // AI fallback — only triggered by pressing Search button
-  const searchGuidelinesAI = async () => {
-    if (!guidelineQuery.trim()) return;
-    if (localMatches.length > 0) return; // local results are sufficient
-    setGuidelineLoading(true);
-    setGuidelineResult(null);
-    try {
-      const result = await queryEthiopianGuidelines(guidelineQuery);
-      setGuidelineResult(result);
-    } catch (err) {
-      console.error('Guideline search failed:', err);
-      setGuidelineResult({
-        success: false,
-        error: 'An unexpected error occurred while searching guidelines.',
-        errorType: 'unknown',
-      });
-    } finally {
-      setGuidelineLoading(false);
-    }
-  };
-
-  const insertGuidelinesIntoPlan = () => {
-    if (!guidelineResult?.response) return;
-    const newText = guidelineResult.response.trim();
-    setAssessmentPlan((prev) => {
-      const prevTrimmed = prev.trim();
-      if (!prevTrimmed) return newText;
-      const separator = prevTrimmed.endsWith('\n') ? '\n' : '\n\n';
-      return prevTrimmed + separator + newText;
-    });
-    setGuidelineModalVisible(false);
-    setGuidelineResult(null);
-    setGuidelineQuery('');
   };
 
   // Classify a protocol line as drug/medication or non-drug
@@ -249,22 +139,11 @@ export default function ConsultationScreen() {
 
     setGuidelineModalVisible(false);
     setLocalMatches([]);
-    setGuidelineResult(null);
     setGuidelineQuery('');
-  };
-
-  const renderGuidelineBullets = (text?: string) => {
-    if (!text) return [];
-    return text
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .map((line) => line.replace(/^[\s]*[-•*][\s]*/, ''));
   };
 
   const closeGuidelineModal = () => {
     setGuidelineModalVisible(false);
-    setGuidelineResult(null);
     setLocalMatches([]);
     setGuidelineQuery('');
   };
@@ -380,31 +259,6 @@ export default function ConsultationScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
-        {/* Voice Dictation */}
-        <View style={styles.soapCard}>
-          <Text style={styles.sectionHeaderLabel}>VOICE DICTATION</Text>
-          <View style={styles.dictationDots}>
-            {Array.from({ length: 30 }).map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.dot,
-                  isRecording && { backgroundColor: Palette.burgundy },
-                ]}
-              />
-            ))}
-          </View>
-          <Pressable
-            style={[styles.micButton, isRecording && styles.micButtonActive]}
-            onPressIn={startDictation}
-            onPressOut={stopDictation}>
-            <Text style={styles.micIcon}>🎙</Text>
-          </Pressable>
-          <Text style={styles.micLabel}>
-            {isRecording ? 'Listening…' : 'Hold to Dictate Notes'}
-          </Text>
-        </View>
-
         {/* Subjective */}
         <View style={styles.soapCard}>
           <View style={styles.soapHeader}>
@@ -494,7 +348,7 @@ export default function ConsultationScreen() {
           />
           <Pressable style={styles.aiButton} onPress={() => setGuidelineModalVisible(true)}>
             <Text style={styles.aiButtonIcon}>📊</Text>
-            <Text style={styles.aiButtonText}>Query MoH Clinical Guidelines (AI)</Text>
+            <Text style={styles.aiButtonText}>Query MoH Clinical Guidelines</Text>
           </Pressable>
         </View>
 
@@ -546,31 +400,9 @@ export default function ConsultationScreen() {
               onChangeText={handleGuidelineQueryChange}
               placeholder="Type a condition e.g. Malaria, Pneumonia…"
               placeholderTextColor={Palette.faint}
-              onSubmitEditing={searchGuidelinesAI}
-              returnKeyType="search"
               autoFocus
             />
-            <Pressable style={styles.modalSearchButton} onPress={searchGuidelinesAI}>
-              {guidelineLoading ? (
-                <ActivityIndicator color={Header.text} />
-              ) : (
-                <Text style={styles.modalSearchButtonText}>{localMatches.length > 0 ? 'AI' : 'Search'}</Text>
-              )}
-            </Pressable>
           </View>
-
-          {guidelineLoading && (
-            <View style={styles.offlineBanner}>
-              <ActivityIndicator size="small" color={Palette.burgundy} />
-              <Text style={[styles.offlineBannerText, { color: Palette.burgundy, marginLeft: 8 }]}>Searching AI guidelines…</Text>
-            </View>
-          )}
-
-          {guidelineResult?.success === false && guidelineResult.errorType === 'network' && (
-            <View style={styles.offlineBanner}>
-              <Text style={styles.offlineBannerText}>Guideline search requires active network</Text>
-            </View>
-          )}
 
           <ScrollView
             style={styles.modalResultsScroll}
@@ -625,29 +457,17 @@ export default function ConsultationScreen() {
               </>
             )}
 
-            {/* AI fallback results */}
-            {guidelineResult?.success === false && guidelineResult.errorType !== 'network' && localMatches.length === 0 && (
-              <View style={styles.modalErrorCard}>
-                <Text style={styles.modalErrorTitle}>Unable to retrieve guidelines</Text>
-                <Text style={styles.modalErrorText}>{guidelineResult.error}</Text>
+            {/* Empty state */}
+            {localMatches.length === 0 && guidelineQuery.trim().length === 0 && (
+              <View style={{ alignItems: 'center', paddingTop: 40 }}>
+                <Text style={{ fontSize: 15, color: Palette.muted }}>Start typing to search MoH guidelines</Text>
               </View>
             )}
 
-            {guidelineResult?.success && localMatches.length === 0 && (
-              <>
-                <View style={styles.modalResultCard}>
-                  <Text style={styles.modalResultLabel}>AI-Generated Guidance</Text>
-                  {renderGuidelineBullets(guidelineResult.response).map((bullet, index) => (
-                    <Text key={index} style={styles.modalBullet}>
-                      • {bullet}
-                    </Text>
-                  ))}
-                </View>
-
-                <Pressable style={styles.modalInsertButton} onPress={insertGuidelinesIntoPlan}>
-                  <Text style={styles.modalInsertButtonText}>Copy / Insert into Plan</Text>
-                </Pressable>
-              </>
+            {localMatches.length === 0 && guidelineQuery.trim().length > 0 && (
+              <View style={{ alignItems: 'center', paddingTop: 40 }}>
+                <Text style={{ fontSize: 15, color: Palette.muted }}>No matching guidelines found.</Text>
+              </View>
             )}
           </ScrollView>
         </SafeAreaView>
@@ -830,54 +650,6 @@ const styles = StyleSheet.create({
     borderColor: Palette.line,
   },
 
-  // Dictation
-  sectionHeaderLabel: {
-    color: Palette.burgundy,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  dictationDots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 16,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Palette.line,
-  },
-  micButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Palette.burgundyLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderWidth: 3,
-    borderColor: Palette.burgundy,
-  },
-  micButtonActive: {
-    backgroundColor: Palette.burgundy,
-    borderColor: Palette.burgundyDark,
-  },
-  micIcon: {
-    fontSize: 32,
-  },
-  micLabel: {
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 14,
-    color: Palette.muted,
-    fontWeight: '500',
-  },
-
   // Vitals Grid
   vitalsGrid: {
     flexDirection: 'row',
@@ -1023,73 +795,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Palette.line,
   },
-  modalSearchButton: {
-    backgroundColor: Palette.burgundy,
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  modalSearchButtonText: {
-    color: Header.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  offlineBanner: {
-    backgroundColor: Palette.dangerLight,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Palette.dangerLight,
-  },
-  offlineBannerText: {
-    color: Palette.danger,
-    fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
   modalResultsScroll: {
     flex: 1,
   },
   modalResultsContent: {
     padding: 16,
   },
-  modalResultCard: {
-    backgroundColor: Palette.white,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  modalResultLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Palette.burgundy,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 10,
-  },
-  modalBullet: {
-    fontSize: 14,
-    lineHeight: 22,
-    color: Palette.inkSoft,
-    marginBottom: 8,
-  },
-  modalInsertButton: {
-    backgroundColor: Palette.burgundy,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  modalInsertButtonText: {
-    color: Header.text,
-    fontSize: 15,
-    fontWeight: '700',
-  },
+
   // Local Guideline Matches
   localMatchesHeader: {
     marginBottom: 12,
@@ -1211,24 +923,5 @@ const styles = StyleSheet.create({
     color: Header.text,
     fontSize: 14,
     fontWeight: '700',
-  },
-
-  modalErrorCard: {
-    backgroundColor: Palette.dangerLight,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Palette.dangerLight,
-  },
-  modalErrorTitle: {
-    color: Palette.danger,
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  modalErrorText: {
-    color: Palette.danger,
-    fontSize: 14,
-    lineHeight: 20,
   },
 });

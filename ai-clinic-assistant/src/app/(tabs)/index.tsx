@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { db, getPatients } from '@/db/client';
-import { syncUnsyncedPatients } from '@/services/supabase';
+import { syncAll, type SyncResult } from '@/services/supabase';
 import type { Patient } from '@/types';
 import { TRIAGE_LEVELS, TRIAGE_FILTER_LABELS, TRIAGE_COLORS, type TriageLevel } from '@/constants/triage';
 import { PatientCard } from '@/components/PatientCard';
@@ -62,29 +62,38 @@ export default function HomeScreen() {
       }
     }, []);
 
-    const handleSync = useCallback(async () => {
-  try {
-    setIsLoading(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncResult, setLastSyncResult] = useState<SyncResult | null>(null);
 
-    await syncUnsyncedPatients();
+  const handleSync = useCallback(async () => {
+    try {
+      setIsSyncing(true);
+      const result = await syncAll();
+      if (isMounted.current) setLastSyncResult(result);
 
-    // Reload patients after sync
-    await loadPatients();
+      if (result.skipped) {
+        Alert.alert('Sync Skipped', result.error ?? 'Unable to sync right now. Your data is saved locally.');
+      } else {
+        const total = result.patients + result.consultations;
+        Alert.alert(
+          'Sync Complete',
+          total > 0
+            ? `Synced ${result.patients} patient(s) and ${result.consultations} consultation(s).`
+            : 'Everything is already up to date.',
+        );
+      }
 
-    Alert.alert('Sync Complete', 'Patient data has been synchronized.');
-  } catch (err) {
-    console.error('Sync failed:', err);
-
-    const message =
-      err instanceof Error ? err.message : 'Failed to synchronize data.';
-
-    Alert.alert('Sync Failed', message);
-  } finally {
-    if (isMounted.current) {
-      setIsLoading(false);
+      await loadPatients();
+    } catch (err) {
+      console.error('Sync failed:', err);
+      Alert.alert(
+        'Sync Failed',
+        'Could not sync data. Your records are saved locally and will sync when connectivity is available.',
+      );
+    } finally {
+      if (isMounted.current) setIsSyncing(false);
     }
-  }
-}, [loadPatients]);
+  }, [loadPatients]);
 
   useEffect(() => {
     loadPatients();
@@ -173,34 +182,18 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>Clinic Assistant</Text>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>Offline</Text>
+          <View style={[styles.statusBadge, lastSyncResult && !lastSyncResult.skipped && styles.statusBadgeOnline]}>
+            <Text style={styles.statusBadgeText}>
+              {lastSyncResult && !lastSyncResult.skipped ? 'Synced' : 'Offline'}
+            </Text>
           </View>
         </View>
         <View style={styles.headerBottomRow}>
-          <Pressable
-            style={styles.handoverButton}
-            onPress={() => router.push('/handover' as any)}
-          >
-            <Text style={styles.handoverButtonText}>HEW Handover</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.syncButton}
-            onPress={handleSync}
-            disabled={isLoading}
-          >
-            <Text style={styles.syncButtonText}>
-              {isLoading ? 'Syncing...' : 'Sync Now'}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.newPatientButton}
-            onPress={() => router.push('/(tabs)/register' as any)}
-          >
           <Pressable style={styles.handoverButton} onPress={() => router.push('/handover' as any)}>
             <Text style={styles.handoverButtonText}>HEW Handover</Text>
+          </Pressable>
+          <Pressable style={styles.syncButton} onPress={handleSync} disabled={isSyncing}>
+            <Text style={styles.syncButtonText}>{isSyncing ? 'Syncing...' : 'Sync'}</Text>
           </Pressable>
           <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
             <Text style={styles.newPatientButtonText}>+ New Patient</Text>
@@ -332,6 +325,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
+  },
+  statusBadgeOnline: {
+    backgroundColor: 'rgba(47, 111, 78, 0.28)',
   },
   statusBadgeText: {
     color: Palette.cream,

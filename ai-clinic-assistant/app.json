@@ -17,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mekdelawit7steam.aiclinicassistant"
     },
     "web": {
       "output": "static",
@@ -35,7 +36,6 @@
       ],
       "expo-sqlite",
       "expo-web-browser",
-      "expo-speech-recognition",
       "expo-image",
       "expo-status-bar",
       "expo-font"
@@ -43,6 +43,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7c9a08d1-e447-4ad5-890d-2214001a124d"
+      }
     }
   }
 }
