@@ -11,26 +11,20 @@ export function isSupabaseConfigured(): boolean {
   return supabaseUrl.length > 0 && supabaseAnonKey.length > 0;
 }
 
-// Provide the native WebSocket constructor for Supabase Realtime.
-// In a browser it's globalThis.WebSocket. In Node/SSR we provide a no-op fallback
-// because the app does not actually subscribe to any realtime channels.
-const wsConstructor =
-  (typeof globalThis !== 'undefined' && globalThis.WebSocket) ||
-  (typeof WebSocket !== 'undefined' && WebSocket) ||
-  (class NoOpWebSocket {
-    constructor() {}
-    close() {}
-    send() {}
-    addEventListener() {}
-    removeEventListener() {}
-  } as any);
+let _supabase: SupabaseClient | null = null;
 
-export const supabase: SupabaseClient = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
-  {
-    realtime: {
-      transport: wsConstructor,
-    },
-  } as any,
-);
+/**
+ * Lazy-initialise the Supabase client.
+ * The client is only created when sync actually runs, which avoids the
+ * WebSocket constructor lookup during Metro SSR (Node) and when the app is
+ * used entirely offline.
+ */
+export function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    _supabase = createClient(
+      supabaseUrl || 'https://placeholder.supabase.co',
+      supabaseAnonKey || 'placeholder-key',
+    );
+  }
+  return _supabase;
+}

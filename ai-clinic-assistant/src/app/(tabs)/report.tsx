@@ -309,6 +309,9 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: 16,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
 
   /* KPI Cards */

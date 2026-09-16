@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { db } from '@/db/client';
 
 export interface SyncResult {
@@ -53,7 +53,7 @@ async function syncPatients(): Promise<number> {
     created_at: p.created_at,
   }));
 
-  const { error } = await supabase.from('patients').upsert(payload);
+  const { error } = await getSupabase().from('patients').upsert(payload);
   if (error) throw error;
 
   for (const p of patients) {
@@ -83,7 +83,7 @@ async function syncConsultations(): Promise<number> {
     created_at: c.created_at,
   }));
 
-  const { error } = await supabase.from('consultations').upsert(payload);
+  const { error } = await getSupabase().from('consultations').upsert(payload);
   if (error) throw error;
 
   for (const c of consultations) {

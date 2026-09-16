@@ -9,7 +9,7 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      initialRouteName="home"
+      initialRouteName="index"
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
@@ -28,17 +28,17 @@ export default function TabsLayout() {
         },
       }}>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🏡</Text>,
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="queue"
         options={{
           title: 'Queue',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>�</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📋</Text>,
         }}
       />
       <Tabs.Screen

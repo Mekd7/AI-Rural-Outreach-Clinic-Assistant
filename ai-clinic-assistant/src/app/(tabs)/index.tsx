@@ -1,489 +1,427 @@
-import { router, useFocusEffect, useNavigation } from 'expo-router';
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import {
-  Alert,
-  Pressable,
-  ScrollView,
+  Image,
   StyleSheet,
   Text,
-  TextInput,
+  useWindowDimensions,
   View,
-  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { db, getPatients } from '@/db/client';
-import { syncAll, type SyncResult } from '@/services/supabase';
-import type { Patient } from '@/types';
-import { TRIAGE_LEVELS, TRIAGE_FILTER_LABELS, TRIAGE_COLORS, type TriageLevel } from '@/constants/triage';
-import { PatientCard } from '@/components/PatientCard';
-import { Header, Palette } from '@/constants/palette';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  type SharedValue,
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+  FadeIn,
+  FadeInDown,
+} from 'react-native-reanimated';
 
-export default function HomeScreen() {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<TriageLevel | 'ALL'>('ALL');
-  const isMounted = useRef(true);
+import { Palette } from '@/constants/palette';
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+const steps = [
+  ['01', 'Community Visit', 'Healthcare workers travel to remote communities, meeting patients where they live.'],
+  ['02', 'AI-Guided Assessment', 'The assistant guides clinical evaluation with intelligent triage and decision support.'],
+  ['03', 'Offline Records', 'Patient data is captured and stored locally\u2014no internet connection required.'],
+  ['04', 'Clinical Handover', 'Structured reports ensure the next provider continues care seamlessly.'],
+  ['05', 'Continuous Care', 'Every visit builds on the last, closing the gap between outreach and facility care.'],
+] as const;
 
-  const loadPatients = useCallback(async () => {
-      if (!isMounted.current) return;
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getPatients();
-        if (isMounted.current) {
-          setPatients(data);
-        }
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to load patients';
-        if (message.includes('Database not initialized')) {
-          setTimeout(() => {
-            if (isMounted.current) {
-              loadPatients();
-            }
-          }, 500);
-          return;
-        }
-        if (isMounted.current) {
-          setError(message);
-          Alert.alert('Error', message);
-        }
-      } finally {
-        if (isMounted.current) {
-          setIsLoading(false);
-        }
-      }
-    }, []);
+const heroSource = require('../../../assets/images/ai-clinic-hero.png');
 
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncResult, setLastSyncResult] = useState<SyncResult | null>(null);
+/* ── Scroll-triggered reveal wrapper ── */
+function ScrollReveal({
+  children,
+  scrollY,
+  style,
+}: {
+  children: React.ReactNode;
+  scrollY: SharedValue<number>;
+  style?: any;
+}) {
+  const sectionY = useSharedValue(10000);
+  const { height: screenHeight } = useWindowDimensions();
 
-  const handleSync = useCallback(async () => {
-    try {
-      setIsSyncing(true);
-      const result = await syncAll();
-      if (isMounted.current) setLastSyncResult(result);
-
-      if (result.skipped) {
-        Alert.alert('Sync Skipped', result.error ?? 'Unable to sync right now. Your data is saved locally.');
-      } else {
-        const total = result.patients + result.consultations;
-        Alert.alert(
-          'Sync Complete',
-          total > 0
-            ? `Synced ${result.patients} patient(s) and ${result.consultations} consultation(s).`
-            : 'Everything is already up to date.',
-        );
-      }
-
-      await loadPatients();
-    } catch (err) {
-      console.error('Sync failed:', err);
-      Alert.alert(
-        'Sync Failed',
-        'Could not sync data. Your records are saved locally and will sync when connectivity is available.',
-      );
-    } finally {
-      if (isMounted.current) setIsSyncing(false);
-    }
-  }, [loadPatients]);
-
-  useEffect(() => {
-    loadPatients();
-  }, [loadPatients]);
-
-  const navigation = useNavigation();
-
-  useFocusEffect(
-    useCallback(() => {
-      loadPatients();
-    }, [loadPatients])
+  const handleLayout = useCallback(
+    (e: any) => {
+      sectionY.value = e.nativeEvent.layout.y;
+    },
+    [sectionY],
   );
 
-  // Backup listener for tab switches that may not trigger useFocusEffect
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadPatients();
-    });
-    return unsubscribe;
-  }, [navigation, loadPatients]);
-
-  const deletePatient = useCallback(async (id: string) => {
-    Alert.alert(
-      'Delete Patient',
-      'Are you sure? This will also delete all consultations for this patient.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await db.runAsync('DELETE FROM consultations WHERE patient_id = ?', [id]);
-              await db.runAsync('DELETE FROM patients WHERE id = ?', [id]);
-              loadPatients();
-            } catch (err) {
-              console.error('Failed to delete patient:', err);
-              Alert.alert('Error', 'Unable to delete patient.');
-            }
-          },
-        },
-      ],
-    );
-  }, [loadPatients]);
-
-  const handlePatientPress = useCallback(async (patientId: string) => {
-    try {
-      const existing = await db.getFirstAsync<{ id: string }>(
-        'SELECT id FROM consultations WHERE patient_id = ? ORDER BY created_at DESC LIMIT 1',
-        [patientId],
-      );
-      if (existing) {
-        router.push(`/consultation/view/${existing.id}` as any);
-      } else {
-        router.push(`/consultation/${patientId}` as any);
-      }
-    } catch {
-      // Fallback to new consultation on error
-      router.push(`/consultation/${patientId}` as any);
-    }
-  }, []);
-
-  const filteredPatients = useMemo(() => {
-    let result = patients;
-
-    // Apply triage filter
-    if (activeFilter !== 'ALL') {
-      result = result.filter((p) => p.triage_level === activeFilter);
-    }
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (p) =>
-          p.full_name.toLowerCase().includes(query) ||
-          p.kebele.toLowerCase().includes(query)
-      );
-    }
-
-    return result;
-  }, [patients, searchQuery, activeFilter]);
+  const animatedStyle = useAnimatedStyle(() => {
+    const viewportBottom = scrollY.value + screenHeight;
+    const progress = viewportBottom - sectionY.value - 60;
+    const opacity = interpolate(progress, [0, 150], [0, 1], Extrapolation.CLAMP);
+    const translateY = interpolate(progress, [0, 150], [36, 0], Extrapolation.CLAMP);
+    return { opacity, transform: [{ translateY }] };
+  });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <View style={styles.headerTopRow}>
-          <Text style={styles.headerTitle}>Clinic Assistant</Text>
-          <View style={[styles.statusBadge, lastSyncResult && !lastSyncResult.skipped && styles.statusBadgeOnline]}>
-            <Text style={styles.statusBadgeText}>
-              {lastSyncResult && !lastSyncResult.skipped ? 'Synced' : 'Offline'}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.headerBottomRow}>
-          <Pressable style={styles.handoverButton} onPress={() => router.push('/handover' as any)}>
-            <Text style={styles.handoverButtonText}>HEW Handover</Text>
-          </Pressable>
-          <Pressable style={styles.syncButton} onPress={handleSync} disabled={isSyncing}>
-            <Text style={styles.syncButtonText}>{isSyncing ? 'Syncing...' : 'Sync'}</Text>
-          </Pressable>
-          <Pressable style={styles.newPatientButton} onPress={() => router.push('/(tabs)/register' as any)}>
-            <Text style={styles.newPatientButtonText}>+ New Patient</Text>
-          </Pressable>
-        </View>
-      </View>
+    <Animated.View onLayout={handleLayout} style={[style, animatedStyle]}>
+      {children}
+    </Animated.View>
+  );
+}
 
-      <View style={styles.searchContainer}>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search by name or kebele…"
-                placeholderTextColor={Palette.faint}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+/* ── Landing page ── */
+export default function LandingHome() {
+  const { width: screenWidth } = useWindowDimensions();
+  const scrollY = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  let heroHeight = screenWidth * 0.75;
+  try {
+    const hero = Image.resolveAssetSource(heroSource);
+    if (hero.width > 0) {
+      heroHeight = screenWidth * (hero.height / hero.width);
+    }
+  } catch {
+    // use fallback aspect if asset resolution fails
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <Animated.ScrollView
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.page}>
+
+          {/* Header */}
+          <Animated.View entering={FadeIn.duration(700)} style={styles.nav}>
+            <View style={styles.brand}>
+              <Text style={styles.brandMark}>{'\u2723'}</Text>
+              <Text style={styles.brandTitle}>
+                AI Clinic{'\n'}
+                <Text style={styles.brandAccent}>Assistant</Text>
+              </Text>
             </View>
+          </Animated.View>
 
-            <View style={styles.filterContainer}>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={styles.filterTabsWrapper}
-                    >
-                      {(['ALL', ...TRIAGE_LEVELS] as const).map((filter) => (
-                        <Pressable
-                          key={filter}
-                          style={[
-                            styles.filterTab,
-                            activeFilter === filter ? styles.filterTabActive : null,
-                            filter !== 'ALL' && activeFilter !== filter && { borderColor: TRIAGE_COLORS[filter].border },
-                          ]}
-                          onPress={() => setActiveFilter(filter)}
-                        >
-                          <Text
-                            style={[
-                              styles.filterTabText,
-                              activeFilter === filter ? styles.filterTabTextActive : null,
-                              filter !== 'ALL' && activeFilter !== filter ? { color: TRIAGE_COLORS[filter].text } : null,
-                            ]}
-                          >
-                            {filter === 'ALL' ? 'All' : TRIAGE_FILTER_LABELS[filter]}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
+          {/* Hero image with gradient blend */}
+          <View style={styles.hero}>
+            <Image
+              source={heroSource}
+              style={[styles.heroImage, { height: heroHeight }]}
+              resizeMode="contain"
+            />
+            <LinearGradient
+              colors={['transparent', 'rgba(245,237,224,0.55)', Palette.parchment]}
+              locations={[0.35, 0.68, 1]}
+              style={styles.heroGradient}
+            />
+          </View>
 
-                  <View style={styles.listContainer}>
-                    {isLoading ? (
-                      <View style={styles.loadingContainer}>
-                        <Text style={styles.subtitle}>Loading patients…</Text>
-                      </View>
-                    ) : error ? (
-                      <View style={styles.loadingContainer}>
-                        <Text style={[styles.subtitle, styles.error]}>{error}</Text>
-                      </View>
-                    ) : filteredPatients.length === 0 ? (
-                      <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>
-                          {searchQuery || activeFilter !== 'ALL'
-                            ? 'No patients match your filters.'
-                            : 'No patients registered yet.'}
-                        </Text>
-                        <Text style={styles.emptyStateSubtext}>
-                          {searchQuery || activeFilter !== 'ALL'
-                            ? 'Try adjusting your search or filter.'
-                            : 'Tap + New Patient to add one.'}
-                        </Text>
-                      </View>
-                    ) : (
-                      <FlatList
-                                              data={filteredPatients}
-                                              keyExtractor={(item) => item.id}
-                                              renderItem={({ item }) => (
-                                                                                              <PatientCard
-                                                                                                patient={item}
-                                                                                                onPress={() => handlePatientPress(item.id)}
-                                                                                                onEdit={() => router.push(`/patient/edit/${item.id}` as any)}
-                                                                                                onDelete={() => deletePatient(item.id)}
-                                                                                              />
-                                                                                            )}
-                                              contentContainerStyle={styles.listContent}
-                                              showsVerticalScrollIndicator={false}
-                                            />
-                    )}
+          {/* Hero copy */}
+          <Animated.View
+            entering={FadeInDown.delay(300).duration(700)}
+            style={styles.heroCopy}
+          >
+            <Text style={styles.heroTitle}>
+              Smarter care{'\n'}for the hardest{'\n'}to reach.
+            </Text>
+            <Text style={styles.heroBody}>
+              An AI-powered clinical assistant built for rural outreach teams.
+              Register patients, guide assessments, and hand over
+              care{'\u2014'}all without an internet connection.
+            </Text>
+          </Animated.View>
+
+          {/* Story 1 */}
+          <ScrollReveal scrollY={scrollY} style={styles.story}>
+            <View style={styles.storyIcon}>
+              <Text style={styles.storyIconText}>{'\u271A'}</Text>
+            </View>
+            <View style={styles.storyContent}>
+              <Text style={styles.storyHeading}>
+                Where clinics can{'\u2019'}t go,{'\n'}this assistant can.
+              </Text>
+              <Text style={styles.storyBody}>
+                Millions of people live hours from the nearest health facility.
+                Outreach visits are often their only contact with the healthcare
+                system. AI Clinic Assistant makes every visit count by guiding
+                health workers through structured, evidence-informed assessments
+                right at the point of care.
+              </Text>
+            </View>
+          </ScrollReveal>
+
+          {/* Story 2 */}
+          <ScrollReveal scrollY={scrollY} style={styles.story}>
+            <View style={styles.storyIcon}>
+              <Text style={styles.storyIconText}>{'\u221E'}</Text>
+            </View>
+            <View style={styles.storyContent}>
+              <Text style={styles.storyHeading}>
+                Care that outlasts{'\n'}the visit.
+              </Text>
+              <Text style={styles.storyBody}>
+                Patient records, triage decisions, and clinical notes are
+                captured offline and organized into structured handover reports.
+                When a Health Extension Worker or physician sees the patient
+                next, they have everything they need to continue{'\u2014'}not
+                restart{'\u2014'}care.
+              </Text>
+            </View>
+          </ScrollReveal>
+
+          {/* Journey */}
+          <ScrollReveal scrollY={scrollY}>
+            <View style={styles.journey}>
+              <View style={styles.sectionHeading}>
+                <Text style={styles.sectionDecor}>{'\u2726'}</Text>
+                <Text style={styles.sectionTitle}>HOW CARE STAYS CONNECTED</Text>
+                <Text style={styles.sectionDecor}>{'\u2726'}</Text>
+              </View>
+
+              <View style={styles.steps}>
+                {steps.map(([number, title, text]) => (
+                  <View style={styles.step} key={number}>
+                    <View style={styles.stepNumber}>
+                      <Text style={styles.stepNumberText}>{number}</Text>
+                    </View>
+                    <View style={styles.stepContent}>
+                      <Text style={styles.stepTitle}>{title}</Text>
+                      <Text style={styles.stepText}>{text}</Text>
+                    </View>
                   </View>
-                </SafeAreaView>
-              );
+                ))}
+              </View>
+            </View>
+          </ScrollReveal>
+
+          {/* Closing */}
+          <ScrollReveal scrollY={scrollY} style={styles.closing}>
+            <Text style={styles.closingTitle}>
+              They may be far from healthcare,{'\n'}but they are not forgotten.
+            </Text>
+            
+          </ScrollReveal>
+
+        </View>
+      </Animated.ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: Palette.ink,
+  },
+  scroll: {
+    flexGrow: 1,
+    alignItems: 'stretch',
+  },
+  page: {
+    width: '100%',
+    maxWidth: 1080,
+    alignSelf: 'center',
     backgroundColor: Palette.parchment,
+    overflow: 'hidden',
   },
-  header: {
-    backgroundColor: Palette.burgundy,
-    paddingTop: 14,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    shadowColor: Palette.ink,
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255, 251, 244, 0.15)',
-  },
-  headerTopRow: {
+
+  /* Nav */
+  nav: {
+    position: 'absolute',
+    zIndex: 5,
+    top: 0,
+    left: 0,
+    right: 0,
+    minHeight: 105,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
-  headerBottomRow: {
+  brand: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 16,
   },
-  headerTitle: {
-    color: Palette.cream,
+  brandMark: {
+    width: 42,
+    height: 42,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    color: Palette.burgundy,
+    fontSize: 36,
+    lineHeight: 42,
+  },
+  brandTitle: {
     fontSize: 22,
     fontWeight: '700',
+    color: Palette.ink,
+    lineHeight: 26,
   },
-  statusBadge: {
-    backgroundColor: Header.chip,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  statusBadgeOnline: {
-    backgroundColor: 'rgba(47, 111, 78, 0.28)',
-  },
-  statusBadgeText: {
-    color: Palette.cream,
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  handoverButton: {
-    flex: 1,
-    backgroundColor: Header.chip,
-    borderRadius: 10,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: Header.chipBorder,
-    alignItems: 'center',
-  },
-  syncButton: {
-    flex: 1,
-    backgroundColor: Header.chip,
-    borderRadius: 10,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: Header.chipBorder,
-    alignItems: 'center',
+  brandAccent: {
+    color: Palette.burgundy,
   },
 
-syncButtonText: {
-  color: Palette.cream,
-  fontSize: 13,
-  fontWeight: '700',
-},
-  handoverButtonText: {
-    color: Palette.cream,
-    fontSize: 13,
+  /* Hero */
+  hero: {
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: Palette.parchmentDeep,
+  },
+  heroImage: {
+    width: '100%',
+  },
+  heroGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '45%',
+  },
+  heroCopy: {
+    paddingHorizontal: 24,
+    paddingTop: 8,
+    paddingBottom: 36,
+    backgroundColor: Palette.parchment,
+  },
+  heroTitle: {
+    fontFamily: 'serif',
+    fontSize: 38,
     fontWeight: '700',
-  },
-  newPatientButton: {
-    flex: 1,
-    backgroundColor: Palette.cream,
-    borderRadius: 10,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  newPatientButtonText: {
     color: Palette.burgundy,
-    fontSize: 13,
+    lineHeight: 44,
+    marginBottom: 16,
+  },
+  heroBody: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: Palette.inkSoft,
+    maxWidth: 510,
+  },
+
+  /* Story */
+  story: {
+    paddingHorizontal: 24,
+    paddingVertical: 42,
+    borderTopWidth: 1,
+    borderTopColor: Palette.line,
+    gap: 20,
+  },
+  storyIcon: {
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    backgroundColor: Palette.sand,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  storyIconText: {
+    fontSize: 32,
+    color: Palette.burgundy,
+  },
+  storyContent: {
+    flex: 1,
+  },
+  storyHeading: {
+    fontFamily: 'serif',
+    fontSize: 26,
+    fontWeight: '700',
+    lineHeight: 30,
+    color: Palette.burgundy,
+    marginBottom: 18,
+  },
+  storyBody: {
+    fontSize: 16,
+    lineHeight: 25.6,
+    color: Palette.ink,
+    maxWidth: 700,
+  },
+
+  /* Journey */
+  journey: {
+    paddingHorizontal: 24,
+    paddingTop: 40,
+    paddingBottom: 58,
+    borderTopWidth: 1,
+    borderTopColor: Palette.line,
+  },
+  sectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 18,
+    marginBottom: 30,
+  },
+  sectionDecor: {
+    fontSize: 18,
+    color: Palette.gold,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.9,
+    color: Palette.burgundy,
+  },
+  steps: {
+    gap: 12,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 15,
+    paddingVertical: 12,
+  },
+  stepNumber: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: Palette.burgundy,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: {
+    color: Palette.cream,
+    fontSize: 17,
     fontWeight: '700',
   },
-  searchContainer: {
-    backgroundColor: Palette.cream,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Palette.line,
-  },
-  searchInput: {
-      backgroundColor: Palette.parchment,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      fontSize: 16,
-      color: Palette.ink,
-      borderWidth: 1,
-      borderColor: Palette.line,
-    },
-    filterContainer: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: Palette.cream,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: Palette.line,
-      },
-      filterTabsWrapper: {
-        flexDirection: 'row',
-        gap: 8,
-      },
-      filterTab: {
-        borderRadius: 999,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderWidth: 1,
-        borderColor: Palette.line,
-        backgroundColor: Palette.parchment,
-        minWidth: 90,
-        alignItems: 'center',
-      },
-      filterTabActive: {
-        backgroundColor: Palette.burgundy,
-        borderColor: Palette.burgundy,
-      },
-      filterTabText: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Palette.muted,
-      },
-      filterTabTextActive: {
-        color: Palette.cream,
-      },
-    container: {
+  stepContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
   },
-  title: {
-    fontSize: 30,
+  stepTitle: {
+    fontSize: 17,
     fontWeight: '700',
     color: Palette.ink,
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
+  stepText: {
+    fontSize: 13,
+    lineHeight: 18.85,
     color: Palette.muted,
-    marginBottom: 24,
   },
-  error: {
-    color: Palette.danger,
-  },
-  emptyState: {
+
+  /* Closing */
+  closing: {
+    paddingHorizontal: 24,
+    paddingVertical: 70,
     alignItems: 'center',
-    gap: 8,
+    borderTopWidth: 1,
+    borderTopColor: Palette.line,
+    backgroundColor: Palette.parchmentDeep,
   },
-  emptyStateText: {
-    fontSize: 16,
-    color: Palette.muted,
-    fontWeight: '600',
-  },
-  emptyStateSubtext: {
-      fontSize: 14,
-      color: Palette.faint,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingVertical: 48,
-    },
-    listContainer: {
-      flex: 1,
-      backgroundColor: Palette.parchment,
-    },
-    listContent: {
-      paddingHorizontal: 16,
-      paddingTop: 8,
-      paddingBottom: 24,
-    },
-    ctaButton: {
-    backgroundColor: Palette.teal,
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 28,
-  },
-  ctaText: {
-    color: Palette.cream,
-    fontSize: 18,
+  closingTitle: {
+    fontFamily: 'serif',
+    fontSize: 30,
     fontWeight: '700',
+    lineHeight: 34,
+    color: Palette.burgundy,
+    textAlign: 'center',
+    marginBottom: 12,
   },
 });

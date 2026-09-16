@@ -595,6 +595,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     gap: 16,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
 
   soapCard: {

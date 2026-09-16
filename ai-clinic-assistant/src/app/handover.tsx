@@ -614,6 +614,9 @@ const styles = StyleSheet.create({
   // Date list
   dateListContent: {
     padding: 16,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   dateCard: {
     backgroundColor: Palette.cream,
@@ -740,6 +743,9 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 16,
     paddingVertical: 14,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   metricCard: {
     flex: 1,
@@ -802,6 +808,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 4,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   centered: {
     flex: 1,

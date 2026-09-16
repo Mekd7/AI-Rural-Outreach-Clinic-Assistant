@@ -197,6 +197,9 @@ const styles = StyleSheet.create({
   list: {
     padding: 16,
     gap: 12,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   card: {
     backgroundColor: Palette.cream,

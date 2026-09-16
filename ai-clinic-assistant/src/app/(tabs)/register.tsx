@@ -366,6 +366,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 18,
     paddingBottom: 24,
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
   },
   formCard: {
     backgroundColor: Palette.cream,
